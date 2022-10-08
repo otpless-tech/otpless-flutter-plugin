@@ -20,7 +20,7 @@ void main() {
   });
 
   test('getPlatformVersion', () async {
-    OtplessFlutter otplessFlutterPlugin = OtplessFlutter();
+    Otpless otplessFlutterPlugin = Otpless();
     MockOtplessFlutterPlatform fakePlatform = MockOtplessFlutterPlatform();
     OtplessFlutterPlatform.instance = fakePlatform;
   
