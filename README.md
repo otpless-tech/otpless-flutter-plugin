@@ -7,13 +7,13 @@ Integrate OTPless "login with whatsapp" functionality
 ### 1. Copy the application name, Package Name and Bundle Id and create an OTPLess account
 - Visit [OTPless Website](www.otpless.com)
 
-![Copy the application name, Package Name and Bundle Id and create an OTPLess account](docs/1.png)
+![Copy the application name, Package Name and Bundle Id and create an OTPLess account](doc/1.png)
 
 ### 2. Go to the Applications tab in sidebar and copy the callback URI
 
 - Callback URI should be the deeplink for your application
 
-![Copy the application name, Package Name and Bundle Id and create an OTPLess account](docs/2.png)
+![Copy the application name, Package Name and Bundle Id and create an OTPLess account](doc/2.png)
 
 ### 2. Added Required Permissions
 
@@ -41,7 +41,7 @@ Integrate OTPless "login with whatsapp" functionality
 ```
 
 - example (query permission)
-  ![Example of iOS deeplinking](docs/iosp1.png)
+  ![Example of iOS deeplinking](doc/iosp1.png)
 
 - We also need the query permission to check whether the user has Whatsapp installed in his/her device
 
@@ -53,7 +53,7 @@ Integrate OTPless "login with whatsapp" functionality
 ```
 
 - example (query permission)
-  ![Example for iOS query permission](docs/iosp2.png)
+  ![Example for iOS query permission](doc/iosp2.png)
 
 #### For Android
 
@@ -86,7 +86,7 @@ final _otplessFlutterPlugin = Otpless();
 ```
 
 ### Function for initiating the login process
-- To get your application's specific intentUrl please read the [docs mentioned here](https://docs.otpless.com/start-to-verify/rest-api)
+- To get your application's specific intentUrl please read the [doc mentioned here](https://docs.otpless.com/start-to-verify/rest-api)
 
 ```dart
  // ** Function to initiate the login process
