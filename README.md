@@ -25,6 +25,8 @@ Integrate OTPless "login with whatsapp" functionality
 - we need to add the domain and scheme to the Info.Plist file
 
 ```xml
+<key>FlutterDeepLinkingEnabled</key>
+<true/>
 <key>CFBundleURLTypes</key>
 <array>
     <dict>
@@ -72,6 +74,13 @@ Integrate OTPless "login with whatsapp" functionality
 
 ## Flutter Part (Implementation)
 
+### Install OTPless Flutter plugin
+- Enter this command in terminal at the root of your flutter app
+
+```
+flutter pub add otpless_flutter
+```
+
 ### Import the plugin in your Flutter project
 **NOTE : USE THE PLUGIN IN APPLICATION'S ENTRY POINT Eg. in the root route (starting page) "/"**
 
@@ -116,12 +125,12 @@ final _otplessFlutterPlugin = Otpless();
   // ** We can check the auth state in this function
   Future<void> initPlatformState() async {
     _otplessFlutterPlugin.authStream.listen((token) {
-      // TODO: Handle user token like making api calls or navigation
+      // TODO: Handle user token like storing in SharedPreferences or navigation
       print(token)
     });
   }
 ```
 
-- after sucessfully getting the user token you can make api calls to OTPless Rest API and get user information from the token
-
 - refer [Rest API documentation](https://docs.otpless.com/start-to-verify/rest-api)
+
+Made with ❤️ by [OTPless](https://otpless.com)

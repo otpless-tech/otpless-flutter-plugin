@@ -1,6 +1,4 @@
 PODS:
-  - appcheck (1.0.3):
-    - Flutter
   - Flutter (1.0.0)
   - otpless_flutter (0.0.1):
     - Flutter
@@ -8,14 +6,11 @@ PODS:
     - Flutter
 
 DEPENDENCIES:
-  - appcheck (from `.symlinks/plugins/appcheck/ios`)
   - Flutter (from `Flutter`)
   - otpless_flutter (from `.symlinks/plugins/otpless_flutter/ios`)
   - uni_links (from `.symlinks/plugins/uni_links/ios`)
 
 EXTERNAL SOURCES:
-  appcheck:
-    :path: ".symlinks/plugins/appcheck/ios"
   Flutter:
     :path: Flutter
   otpless_flutter:
@@ -24,7 +19,6 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/uni_links/ios"
 
 SPEC CHECKSUMS:
-  appcheck: e1ab9d4e03736f03e0401554a134d1ed502d7629
   Flutter: 50d75fe2f02b26cc09d224853bb45737f8b3214a
   otpless_flutter: 3ef6a62c4c43813b3c481270d7a3237d72748685
   uni_links: d97da20c7701486ba192624d99bffaaffcfc298a
