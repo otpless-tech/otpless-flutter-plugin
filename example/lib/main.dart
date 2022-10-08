@@ -40,9 +40,12 @@ class _MyAppState extends State<MyApp> {
   // ** Function to initiate the login process
   void initiateWhatsappLogin(String intentUrl) async{
     var result = await _otplessFlutterPlugin.loginUsingWhatsapp(intentUrl: intentUrl);
-    if(result != null){
-      // TODO: Handle errors here like showing toasts
-      print(result);
+    switch (result['code']) {
+      case "581":
+        print(result['message']);
+        //TODO: handle whatsapp not found
+        break;
+      default:
     }
   }
 
