@@ -5,7 +5,7 @@ Integrate OTPless "login with whatsapp" functionality
 # Getting Started
 ## Native Part (Permissions)
 ### 1. Copy the application name, Package Name and Bundle Id and create an OTPLess account
-- Visit [OTPless Website](www.otpless.com)
+- Visit [OTPless Website](https://otpless.com/dashboard/activity)
 
 ![Copy the application name, Package Name and Bundle Id and create an OTPLess account](doc/1.png)
 
