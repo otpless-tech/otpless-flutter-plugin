@@ -25,8 +25,10 @@ public class WhatsAppHandler: NSObject {
         if scheme == "" {
             result("\(responseCodeError.invalidURL.rawValue)-\(StringValues.WHATSAPP_LINK_CREATE_ERROR)")
         }else{
-            if let urlString = scheme.addingPercentEncoding(withAllowedCharacters: NSCharacterSet.urlQueryAllowed) {
-                if let whatsappURL = NSURL(string: urlString) {
+            if let newUrl = scheme.removingPercentEncoding as String? {
+            print(newUrl)
+            if let urlString = URL(string: newUrl.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!) {
+                if let whatsappURL = NSURL(string: urlString.absoluteString) {
                     if UIApplication.shared.canOpenURL(whatsappURL as URL) {
                         if #available(iOS 10.0, *) {
                             UIApplication.shared.open(whatsappURL as URL, options: [:], completionHandler: nil)
@@ -42,6 +44,10 @@ public class WhatsAppHandler: NSObject {
                 }
             }else{
                 result("\(responseCodeError.invalidURL.rawValue)-\(StringValues.WHATSAPP_LINK_CREATE_ERROR)")
+            }
+            } else {
+                result("\(responseCodeError.invalidURL.rawValue)-\(StringValues.WHATSAPP_LINK_CREATE_ERROR)")
+
             }
         }
     }
