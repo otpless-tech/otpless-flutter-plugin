@@ -49,7 +49,7 @@ class OtplessFlutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
     }else if(call.method=="openWhatsapp"){
       initiateOtplessFlow(call.argument("uri"),result)
     } else {
-      result.notImplemented()
+      return
     }
   }
 
@@ -63,7 +63,7 @@ class OtplessFlutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
   }
 
   private fun initiateOtplessFlow(intentUri:String?,result: Result) {
-    if(isAppInstalled("com.whatsapp")){
+    if(isAppInstalled("com.whatsapp") || isAppInstalled("com.whatsapp.w4b")){
       var i = Intent()
       i.setData(Uri.parse(intentUri))
       activity.startActivity(i)
@@ -81,14 +81,14 @@ class OtplessFlutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
   }
 
   override fun onDetachedFromActivityForConfigChanges() {
-    TODO("Not yet implemented")
+    return
   }
 
   override fun onReattachedToActivityForConfigChanges(binding: ActivityPluginBinding) {
-    TODO("Not yet implemented")
+    return
   }
 
   override fun onDetachedFromActivity() {
-    TODO("Not yet implemented")
+    return
   }
 }
