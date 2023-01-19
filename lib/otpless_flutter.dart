@@ -35,7 +35,9 @@ class Otpless {
     Subscribe / listen to this stream to get user authentication token
   */
   Stream<String?> get authStream {
-    return uriLinkStream
-        .map((event) => event?.queryParameters['token'] ?? "NA");
+    return uriLinkStream.map((event) =>
+        event?.queryParameters['token'] ??
+        event?.queryParameters['waId'] ??
+        "NA");
   }
 }

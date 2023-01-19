@@ -7,7 +7,6 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.util.Log
 import androidx.annotation.NonNull
-
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
@@ -15,6 +14,7 @@ import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
+
 
 class statusMessages{
   var WHATSAPP_LINK_CREATE_ERROR = "Unable to create WhatsApp Data Link"
@@ -64,9 +64,9 @@ class OtplessFlutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
 
   private fun initiateOtplessFlow(intentUri:String?,result: Result) {
     if(isAppInstalled("com.whatsapp") || isAppInstalled("com.whatsapp.w4b")){
-      var i = Intent()
-      i.setData(Uri.parse(intentUri))
-      activity.startActivity(i)
+      val openURL = Intent(android.content.Intent.ACTION_VIEW)
+      openURL.data = Uri.parse(intentUri)
+      activity.startActivity(openURL)
       return
     }
     result.success("581-Unable to open WhatsApp")
