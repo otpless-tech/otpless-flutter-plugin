@@ -1,7 +1,3 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
   package="com.example.otpless_flutter">
-        <queries>
-            <package android:name="com.whatsapp.w4b" />
-            <package android:name="com.whatsapp" />
-        </queries>
 </manifest>

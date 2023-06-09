@@ -24,3 +24,7 @@
 * Avoiding memory leaks
 * stopping unwanted crash messages
 * Bug Resolves
+
+## 1.0.9
+
+* one tap support

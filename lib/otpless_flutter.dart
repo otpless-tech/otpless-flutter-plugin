@@ -1,9 +1,10 @@
-import 'package:uni_links/uni_links.dart';
-
 import 'otpless_flutter_platform_interface.dart';
 import 'package:otpless_flutter/otpless_flutter_method_channel.dart';
 
 class Otpless {
+  final MethodChannelOtplessFlutter _otplessChannel =
+      MethodChannelOtplessFlutter();
+
   Future<String?> getPlatformVersion() {
     return OtplessFlutterPlatform.instance.getPlatformVersion();
   }
@@ -11,33 +12,19 @@ class Otpless {
   /*
     Function to redirect to Whatsapp application
   */
-  Future<Map<String, String>> loginUsingWhatsapp(
-      {required String intentUrl}) async {
-    if (intentUrl.isEmpty) {
-      throw Exception({
-        "code": "EMPTY_URI",
-        "message": "OTPLess Error : Empty intent URI Provided"
-      });
-    }
-    String? res =
-        await MethodChannelOtplessFlutter().openWhatsappBot(intentUrl);
-    if (res != null) {
-      var temp = res.split("-");
-      return {"code": temp.first, "message": temp.last};
-    }
-    return {"code": "NA", "message": "NA"};
+  Future<void> start(OtplessResultCallback callback) async {
+    _otplessChannel.openOtpless(callback);
   }
 
-  /*
-    Getter variable to get stream of authentication tokens if there is
-    any logins via whatsapp
+  Future<void> signInCompleted() async {
+    _otplessChannel.signInCompleted();
+  }
 
-    Subscribe / listen to this stream to get user authentication token
-  */
-  Stream<String?> get authStream {
-    return uriLinkStream.map((event) =>
-        event?.queryParameters['token'] ??
-        event?.queryParameters['waId'] ??
-        "NA");
+  Future<void> hideFabButton() async {
+    _otplessChannel.hideFabButton();
+  }
+
+  Future<bool> isWhatsAppInstalled() async {
+    return _otplessChannel.isWhatsAppInstalled();
   }
 }

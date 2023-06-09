@@ -7,6 +7,8 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.util.Log
 import androidx.annotation.NonNull
+import com.otpless.utils.Utility
+import com.otpless.views.OtplessManager
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
@@ -15,17 +17,6 @@ import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
 
-
-class statusMessages{
-  var WHATSAPP_LINK_CREATE_ERROR = "Unable to create WhatsApp Data Link"
-  var WHATSAPP_NOT_FOUND = "Unable to open WhatsApp"
-  var WHATSAPP_URL_NOT_FOUND = "WhatsApp URL not found"
-  var WHATSAPP_URL_FOUND = "Valid URL Scheme"
-  var URL_TOKEN = "token"
-  var URL_TOKEN_FOUND = "Deeplink token found"
-  var URL_TOKEN_NOT_FOUND = "Deeplink token not found"
-  var INVALID_URL = "Invalid url"
-}
 
 /** OtplessFlutterPlugin */
 class OtplessFlutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
@@ -44,32 +35,44 @@ class OtplessFlutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
   }
 
   override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
-    if (call.method == "getPlatformVersion") {
-      result.success("Android ${android.os.Build.VERSION.RELEASE}")
-    }else if(call.method=="openWhatsapp"){
-      initiateOtplessFlow(call.argument("uri"),result)
-    } else {
-      return
+    when (call.method) {
+      "openOtplessSdk" -> {
+        result.success("")
+        openOtpless()
+      }
+
+      "onSignComplete" -> {
+        activity.runOnUiThread {
+          OtplessManager.getInstance().onSignInCompleted()
+        }
+      }
+
+      "hideFabButton" -> {
+        activity.runOnUiThread {
+          OtplessManager.getInstance().showFabButton(false)
+        }
+      }
+
+      "isWhatsAppInstalled" -> {
+        result.success(Utility.isWhatsAppInstalled(activity))
+      }
+
+      else -> {
+        result.notImplemented()
+      }
     }
   }
 
-  fun isAppInstalled(packageName: String?): Boolean {
-    return try {
-      context.packageManager.getApplicationInfo(packageName!!, 0).enabled
-    } catch (e: PackageManager.NameNotFoundException) {
-      Log.d("plygin",e.toString())
-      false
-    }
+  fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+    OtplessManager.getInstance().onActivityResult(requestCode, resultCode, data)
   }
 
-  private fun initiateOtplessFlow(intentUri:String?,result: Result) {
-    if(isAppInstalled("com.whatsapp") || isAppInstalled("com.whatsapp.w4b")){
-      val openURL = Intent(android.content.Intent.ACTION_VIEW)
-      openURL.data = Uri.parse(intentUri)
-      activity.startActivity(openURL)
-      return
+  private fun openOtpless() {
+    activity.runOnUiThread {
+      OtplessManager.getInstance().startLegacy(activity) {
+        channel.invokeMethod("otpless_callback_event", it.toJsonString())
+      }
     }
-    result.success("581-Unable to open WhatsApp")
   }
 
   override fun onDetachedFromEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
