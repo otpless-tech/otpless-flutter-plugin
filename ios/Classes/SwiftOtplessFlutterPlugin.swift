@@ -7,23 +7,85 @@
 
 import Flutter
 import UIKit
+import OtplessSDK
 
 
 public class SwiftOtplessFlutterPlugin: NSObject, FlutterPlugin {
+    
   public static func register(with registrar: FlutterPluginRegistrar) {
     let channel = FlutterMethodChannel(name: "otpless_flutter", binaryMessenger: registrar.messenger())
     let instance = SwiftOtplessFlutterPlugin()
     registrar.addMethodCallDelegate(instance, channel: channel)
+      ChannelManager.shared.setMethodChannel(channel)
   }
 
   public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
-      let args = call.arguments as! Dictionary<String,String>
-      if(call.method == "openWhatsapp"){
-          WhatsAppHandler.sharedInstance.initiateWhatsappLogin(scheme: args["uri"]!, result: result)
-      }else{
-          result("iOS " + UIDevice.current.systemVersion)
+      if(call.method == "openOtplessSdk"){
+        let viewController = UIApplication.shared.delegate?.window??.rootViewController;
+          Otpless.sharedInstance.delegate = self
+          Otpless.sharedInstance.start(vc: viewController!)
+      } else if(call.method == "hideFabButton"){
+          Otpless.sharedInstance.shouldHideButton(hide: true)
+          result("")
+      }
+      else if(call.method == "isWhatsAppInstalled"){
+          result(Otpless.sharedInstance.isWhatsappInstalled())
+      }
+      else if(call.method == "onSignComplete"){
+          Otpless.sharedInstance.onSignedInComplete()
       }
   }
 
+  static  func convertToJsonString(response: OtplessSDK.OtplessResponse?) -> String? {
+        do {
+            var params = [String: Any]()
+            if (response != nil && response?.errorString != nil){
+                params["errorMessage"] = response?.errorString
+            } else {
+                if response != nil && response?.responseData != nil {
+                    params =  response!.responseData!
+                }
+            }
+            if response != nil {
+                let jsonData = try JSONSerialization.data(withJSONObject: params, options: [])
+                if let jsonString = String(data: jsonData, encoding: .utf8) {
+                    return jsonString
+                }
+            } else {
+                return"{}"
+            }
+        } catch {
+            print("Error converting to JSON string: \(error)")
+            return"{}"
+        }
+        
+        return "{}"
+    }
+    
+   
+
    
 }
+
+extension SwiftOtplessFlutterPlugin: onResponseDelegate{
+    public func onResponse(response: OtplessSDK.OtplessResponse?) {
+        ChannelManager.shared.invokeMethod(method: "otpless_callback_event", arguments: SwiftOtplessFlutterPlugin.convertToJsonString(response: response))
+    }
+}
+
+class ChannelManager {
+    static let shared = ChannelManager()
+
+    private var methodChannel: FlutterMethodChannel?
+
+    private init() {}
+
+    func setMethodChannel(_ channel: FlutterMethodChannel) {
+        methodChannel = channel
+    }
+
+    func invokeMethod(method: String, arguments: Any?) {
+        methodChannel?.invokeMethod(method, arguments: arguments)
+    }
+}
+

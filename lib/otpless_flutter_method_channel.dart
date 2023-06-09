@@ -29,20 +29,6 @@ class MethodChannelOtplessFlutter extends OtplessFlutterPlatform {
     });
   }
 
-  @override
-  Future<String?> getPlatformVersion() async {
-    final version =
-        await methodChannel.invokeMethod<String>('getPlatformVersion');
-    return version;
-  }
-
-  @override
-  Future<String?> openWhatsappBot(String intentUrl) async {
-    var out = await methodChannel
-        .invokeMethod<String>('openWhatsapp', {"uri": intentUrl});
-    return out;
-  }
-
   Future<void> openOtpless(OtplessResultCallback callback) async {
     _callback = callback;
     await methodChannel.invokeMethod("openOtplessSdk");

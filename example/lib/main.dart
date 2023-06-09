@@ -17,14 +17,14 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  String _userToken = 'Unknown';
+  String _dataResponse = 'Unknown';
   final _otplessFlutterPlugin = Otpless();
   final TextEditingController urlTextContoller = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    _otplessFlutterPlugin.hideFabButton();
+    // _otplessFlutterPlugin.hideFabButton();
   }
 
   // ** Function that is called when page is loaded
@@ -32,15 +32,12 @@ class _MyAppState extends State<MyApp> {
   Future<void> startOtpless() async {
     _otplessFlutterPlugin.start((result) {
       var message = "";
-      if (result['data'] == null) {
-        final error = result['errorMessage'];
-        message = "error: $error";
-      } else {
+      if (result['data'] != null) {
         final token = result['data']['token'];
         message = "token: $token";
       }
       setState(() {
-        _userToken = message ?? "Unknown";
+        _dataResponse = message ?? "Unknown";
       });
     });
   }
@@ -67,15 +64,15 @@ class _MyAppState extends State<MyApp> {
                 children: [
                   CupertinoButton.filled(
                       child: Text("Login With Whatsapp"),
-                      onPressed: () {
-                        _otplessFlutterPlugin
-                            .isWhatsAppInstalled()
-                            .then((value) => startOtpless());
-                      }),
+                      onPressed: startOtpless),
+                  CupertinoButton.filled(
+                      child: Text("remove button"),
+                      onPressed: (() =>
+                          _otplessFlutterPlugin.signInCompleted())),
                   Text(""),
                   SizedBox(height: 100),
                   SizedBox(height: 10),
-                  Text(_userToken)
+                  Text(_dataResponse)
                 ],
               ),
             ),
