@@ -28,3 +28,7 @@
 ## 1.0.9
 
 * one tap support
+
+## 1.1.0
+
+* environment sdk version changes
