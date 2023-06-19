@@ -23,6 +23,14 @@ public class SwiftOtplessFlutterPlugin: NSObject, FlutterPlugin {
       if(call.method == "openOtplessSdk"){
         let viewController = UIApplication.shared.delegate?.window??.rootViewController;
           Otpless.sharedInstance.delegate = self
+          if let args = call.arguments as? [String: Any] {
+              if let jsonString = args["arg"] as? String {
+                  if let params = SwiftOtplessFlutterPlugin.convertToDictionary(text: jsonString) {
+                      Otpless.sharedInstance.startwithParams(vc: viewController!, params: params)
+                      return
+                  }
+              }
+          }
           Otpless.sharedInstance.start(vc: viewController!)
       } else if(call.method == "hideFabButton"){
           Otpless.sharedInstance.shouldHideButton(hide: true)
@@ -62,7 +70,16 @@ public class SwiftOtplessFlutterPlugin: NSObject, FlutterPlugin {
         return "{}"
     }
     
-   
+    static func convertToDictionary(text: String) -> [String: Any]? {
+        if let data = text.data(using: .utf8) {
+            do {
+                return try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
+            } catch {
+                print(error.localizedDescription)
+            }
+        }
+        return nil
+    }
 
    
 }
