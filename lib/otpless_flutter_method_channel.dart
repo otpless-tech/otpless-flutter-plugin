@@ -1,8 +1,9 @@
+import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
 import 'otpless_flutter_platform_interface.dart';
-import 'dart:convert';
 
 typedef void OtplessResultCallback(dynamic);
 
@@ -29,9 +30,15 @@ class MethodChannelOtplessFlutter extends OtplessFlutterPlatform {
     });
   }
 
-  Future<void> openOtpless(OtplessResultCallback callback) async {
+  Future<void> openOtpless(
+      OtplessResultCallback callback, Map<String, dynamic>? jsonObject) async {
     _callback = callback;
-    await methodChannel.invokeMethod("openOtplessSdk");
+    if (jsonObject == null) {
+      await methodChannel.invokeMethod("openOtplessSdk");
+    } else {
+      await methodChannel
+          .invokeMethod("openOtplessSdk", {'arg': json.encode(jsonObject)});
+    }
   }
 
   Future<void> signInCompleted() async {

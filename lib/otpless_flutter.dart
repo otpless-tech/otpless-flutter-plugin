@@ -12,8 +12,9 @@ class Otpless {
   /*
     Function to redirect to Whatsapp application
   */
-  Future<void> start(OtplessResultCallback callback) async {
-    _otplessChannel.openOtpless(callback);
+  Future<void> start(OtplessResultCallback callback,
+      {Map<String, dynamic>? jsonObject}) async {
+    _otplessChannel.openOtpless(callback, jsonObject);
   }
 
   Future<void> signInCompleted() async {

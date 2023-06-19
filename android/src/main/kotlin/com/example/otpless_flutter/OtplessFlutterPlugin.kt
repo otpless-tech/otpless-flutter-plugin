@@ -16,6 +16,7 @@ import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
+import org.json.JSONObject
 
 
 /** OtplessFlutterPlugin */
@@ -38,7 +39,21 @@ class OtplessFlutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
     when (call.method) {
       "openOtplessSdk" -> {
         result.success("")
-        openOtpless()
+        val jsonString = call.argument<String>("arg")
+        val jsonObject = if (jsonString != null) {
+          try {
+            Log.d(Tag, "arg: $jsonString")
+            JSONObject(jsonString)
+          } catch (ex: Exception) {
+            Log.d(Tag, "wrong json object is passed. error ${ex.message}")
+            ex.printStackTrace()
+            null
+          }
+        } else {
+          Log.d(Tag, "No json object is passed.")
+          null
+        }
+        openOtpless(jsonObject)
       }
 
       "onSignComplete" -> {
@@ -67,11 +82,11 @@ class OtplessFlutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
     OtplessManager.getInstance().onActivityResult(requestCode, resultCode, data)
   }
 
-  private fun openOtpless() {
+  private fun openOtpless(json: JSONObject?) {
     activity.runOnUiThread {
-      OtplessManager.getInstance().startLegacy(activity) {
+      OtplessManager.getInstance().startLegacy(activity, {
         channel.invokeMethod("otpless_callback_event", it.toJsonString())
-      }
+      }, json)
     }
   }
 
@@ -93,5 +108,9 @@ class OtplessFlutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
 
   override fun onDetachedFromActivity() {
     return
+  }
+
+  companion object {
+    private const val Tag = "OtplessFlutterPlugin"
   }
 }
