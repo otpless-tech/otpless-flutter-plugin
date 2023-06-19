@@ -36,3 +36,4 @@
 ## 1.1.1
 
 * android sdk version upgrade to 2.1.0
+* params support
