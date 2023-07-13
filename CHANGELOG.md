@@ -37,3 +37,6 @@
 
 * android sdk version upgrade to 2.1.0
 * params support
+
+## 1.1.2
+* ios sdk version updated to 2.0.0
