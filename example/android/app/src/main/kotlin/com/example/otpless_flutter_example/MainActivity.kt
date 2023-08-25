@@ -6,11 +6,11 @@ import io.flutter.embedding.android.FlutterActivity
 
 class MainActivity: FlutterActivity() {
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
         val plugin = flutterEngine?.plugins?.get(OtplessFlutterPlugin::class.java)
         if (plugin is OtplessFlutterPlugin) {
-            plugin.onActivityResult(requestCode, resultCode, data)
+            plugin.onNewIntent(intent)
         }
     }
 }

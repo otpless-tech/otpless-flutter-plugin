@@ -40,3 +40,7 @@
 
 ## 1.1.2
 * ios sdk version updated to 2.0.0
+
+## 1.1.3
+* android sdk dependency changed to maven
+* new fast android sdk 2.1.4 integrated.
