@@ -107,6 +107,9 @@ class OtplessFlutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
     }
   }
 
+  fun onBackPressed(): Boolean {
+    return otplessView.onBackPressed()
+  }
 
 
   override fun onDetachedFromEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {

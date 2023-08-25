@@ -13,4 +13,12 @@ class MainActivity: FlutterActivity() {
             plugin.onNewIntent(intent)
         }
     }
+
+    override fun onBackPressed() {
+        val plugin = flutterEngine?.plugins?.get(OtplessFlutterPlugin::class.java)
+        if (plugin is OtplessFlutterPlugin) {
+            if (plugin.onBackPressed()) return
+        }
+        super.onBackPressed()
+    }
 }
