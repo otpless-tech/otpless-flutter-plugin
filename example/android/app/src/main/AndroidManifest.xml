@@ -32,6 +32,16 @@
                 <data android:scheme="exam" android:host="example.com"  />
             </intent-filter>
             <!--  -->
+            
+            <!--    intent filter for otpless        -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data
+                    android:host="otpless"
+                    android:scheme= "${applicationId}.otpless"/>
+            </intent-filter>
         </activity>
         <!-- Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->

@@ -42,6 +42,19 @@ class _MyAppState extends State<MyApp> {
     });
   }
 
+  Future<void> openLoginPage() async {
+    _otplessFlutterPlugin.openLoginPage((result) {
+      var message = "";
+      if (result['data'] != null) {
+        final token = result['data']['token'];
+        message = "token: $token";
+      }
+      setState(() {
+        _dataResponse = message ?? "Unknown";
+      });
+    });
+  }
+
   @override
   void dispose() {
     // Clean up the controller when the widget is disposed.
@@ -65,6 +78,9 @@ class _MyAppState extends State<MyApp> {
                   CupertinoButton.filled(
                       child: Text("Login With Whatsapp"),
                       onPressed: startOtpless),
+                  CupertinoButton.filled(
+                      child: Text("Open Otpless Login Page"),
+                      onPressed: openLoginPage),
                   CupertinoButton.filled(
                       child: Text("remove button"),
                       onPressed: (() =>

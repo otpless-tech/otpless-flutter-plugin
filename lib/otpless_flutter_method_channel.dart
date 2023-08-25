@@ -41,6 +41,17 @@ class MethodChannelOtplessFlutter extends OtplessFlutterPlatform {
     }
   }
 
+  Future<void> openOtplessLoginPage(
+      OtplessResultCallback callback, Map<String, dynamic>? jsonObject) async {
+    _callback = callback;
+    if (jsonObject == null) {
+      await methodChannel.invokeMethod("openOtplessLoginPage");
+    } else {
+      await methodChannel.invokeMethod(
+          "openOtplessLoginPage", {'arg': json.encode(jsonObject)});
+    }
+  }
+
   Future<void> signInCompleted() async {
     await methodChannel.invokeMethod("onSignComplete");
   }

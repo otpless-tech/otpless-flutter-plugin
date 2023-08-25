@@ -17,6 +17,14 @@ class Otpless {
     _otplessChannel.openOtpless(callback, jsonObject);
   }
 
+  /*
+    open login page
+  */
+  Future<void> openLoginPage(OtplessResultCallback callback,
+      {Map<String, dynamic>? jsonObject}) async {
+    _otplessChannel.openOtplessLoginPage(callback, jsonObject);
+  }
+
   Future<void> signInCompleted() async {
     _otplessChannel.signInCompleted();
   }
