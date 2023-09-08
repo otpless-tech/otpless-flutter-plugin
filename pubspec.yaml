@@ -36,7 +36,7 @@ flutter:
   plugin:
     platforms:
       android:
-        package: com.example.otpless_flutter
+        package: com.otpless.otplessflutter
         pluginClass: OtplessFlutterPlugin
       ios:
         pluginClass: OtplessFlutterPlugin

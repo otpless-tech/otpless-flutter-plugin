@@ -47,3 +47,7 @@
 
 ## 1.1.4
 * ios sdk 2.0.1 with login page support added
+
+## 1.1.4
+* Plugin package corrected.
+* android sdk version updated to 2.1.6

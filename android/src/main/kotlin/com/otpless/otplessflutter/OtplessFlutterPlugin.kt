@@ -1,4 +1,4 @@
-package com.example.otpless_flutter
+package com.otpless.otplessflutter
 
 import android.app.Activity
 import android.content.Context
