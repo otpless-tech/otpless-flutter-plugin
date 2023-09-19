@@ -44,3 +44,6 @@
 ## 1.1.3
 * android sdk dependency changed to maven
 * new fast android sdk 2.1.4 integrated.
+
+## 1.1.4
+* ios sdk 2.0.1 with login page support added
