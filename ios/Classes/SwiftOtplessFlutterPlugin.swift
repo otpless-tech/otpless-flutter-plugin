@@ -42,7 +42,29 @@ public class SwiftOtplessFlutterPlugin: NSObject, FlutterPlugin {
       else if(call.method == "onSignComplete"){
           Otpless.sharedInstance.onSignedInComplete()
       }
+      else if(call.method == "openOtplessLoginPage"){
+          guard let viewController = UIApplication.shared.delegate?.window??.rootViewController else {return}
+          Otpless.sharedInstance.delegate = self;
+          Otpless.sharedInstance.shouldHideButton(hide: true);
+          SwiftOtplessFlutterPlugin.filterParamsCondition(call, on: {param in
+              Otpless.sharedInstance.showOtplessLoginPageWithParams(vc: viewController, params: param)
+          }, off: {
+              Otpless.sharedInstance.showOtplessLoginPage(vc: viewController)
+          });
+      }
   }
+    
+    static func filterParamsCondition(_ call: FlutterMethodCall, on onHaving: ([String: Any]) -> Void, off onNotHaving: () -> Void) {
+        if let args = call.arguments as? [String: Any] {
+            if let jsonString = args["arg"] as? String {
+                if let params = convertToDictionary(text: jsonString) {
+                    onHaving(params)
+                    return
+                }
+            }
+        }
+        onNotHaving()
+    }
 
   static  func convertToJsonString(response: OtplessSDK.OtplessResponse?) -> String? {
         do {

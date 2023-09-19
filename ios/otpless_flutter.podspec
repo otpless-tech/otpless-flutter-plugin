@@ -4,7 +4,7 @@
 #
 Pod::Spec.new do |s|
   s.name             = 'otpless_flutter'
-  s.version          = '0.0.3'
+  s.version          = '0.0.4'
   s.summary          = 'Sign-up/ Sign-in via Whatsapp engineered by Otpless.'
   s.description      = <<-DESC
   'Sign-up/ Sign-in via Whatsapp engineered by Otpless. Get your user authentication sorted in just five minutes by integrating of Otpless sdk.'
@@ -15,7 +15,7 @@ Pod::Spec.new do |s|
   s.source           = { :git => 'https://github.com/otpless-tech/Otpless-iOS-SDK.git', :tag => s.version.to_s }
   s.source_files = 'Classes/**/*'
   s.dependency 'Flutter'
-  s.dependency 'OtplessSDK', '2.0.0'
+  s.dependency 'OtplessSDK', '2.0.1'
   s.ios.deployment_target = '11.0'
   s.resources = ["OtplessSDK/Assets/*.png"]
 
