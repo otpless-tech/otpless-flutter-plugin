@@ -5,16 +5,16 @@ import 'package:flutter/services.dart';
 
 import 'otpless_flutter_platform_interface.dart';
 
-typedef void OtplessResultCallback(dynamic);
+typedef OtplessResultCallback = void Function(dynamic);
 
 /// An implementation of [OtplessFlutterPlatform] that uses method channels.
 class MethodChannelOtplessFlutter extends OtplessFlutterPlatform {
-  final eventChannel = EventChannel('otpless_callback_event');
+  final eventChannel = const EventChannel('otpless_callback_event');
 
   @visibleForTesting
   final methodChannel = const MethodChannel('otpless_flutter');
 
-  OtplessResultCallback? _callback = null;
+  OtplessResultCallback? _callback;
 
   MethodChannelOtplessFlutter() {
     _setEventChannel();
