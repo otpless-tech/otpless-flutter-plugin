@@ -15,7 +15,7 @@ Pod::Spec.new do |s|
   s.source           = { :git => 'https://github.com/otpless-tech/Otpless-iOS-SDK.git', :tag => s.version.to_s }
   s.source_files = 'Classes/**/*'
   s.dependency 'Flutter'
-  s.dependency 'OtplessSDK', '2.0.1'
+  s.dependency 'OtplessSDK', '2.0.3'
   s.ios.deployment_target = '11.0'
   s.resources = ["OtplessSDK/Assets/*.png"]
 

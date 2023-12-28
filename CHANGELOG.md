@@ -51,3 +51,8 @@
 ## 2.0.0
 * Plugin package corrected.
 * android sdk version updated to 2.1.6
+
+## 2.1.0
+* Inapp browser.
+* Otp autoread.
+* Google phone hint.
