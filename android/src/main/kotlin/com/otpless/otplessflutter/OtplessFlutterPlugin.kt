@@ -15,11 +15,12 @@ import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
+import io.flutter.plugin.common.PluginRegistry.ActivityResultListener
 import org.json.JSONObject
 
 
 /** OtplessFlutterPlugin */
-class OtplessFlutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
+class OtplessFlutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, ActivityResultListener {
   /// The MethodChannel that will the communication between Flutter and native Android
   ///
   /// This local reference serves to register the plugin with the Flutter Engine and unregister it
@@ -119,6 +120,7 @@ class OtplessFlutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
   override fun onAttachedToActivity(binding: ActivityPluginBinding) {
     activity = binding.activity
     otplessView = OtplessManager.getInstance().getOtplessView(activity)
+    binding.addActivityResultListener(this)
   }
 
   override fun onDetachedFromActivityForConfigChanges() {
@@ -135,5 +137,12 @@ class OtplessFlutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
 
   companion object {
     private const val Tag = "OtplessFlutterPlugin"
+    private const val OTPLESS_PHONE_HINT_REQUEST = 9767355;
+  }
+
+  override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?): Boolean {
+    if (requestCode != OTPLESS_PHONE_HINT_REQUEST || !this::otplessView.isInitialized) return false
+    otplessView.onActivityResult(requestCode, resultCode, data)
+    return true
   }
 }
