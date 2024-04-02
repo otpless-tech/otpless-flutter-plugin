@@ -30,38 +30,20 @@ class MethodChannelOtplessFlutter extends OtplessFlutterPlatform {
     });
   }
 
-  Future<void> openOtpless(
-      OtplessResultCallback callback, Map<String, dynamic>? jsonObject) async {
-    _callback = callback;
-    if (jsonObject == null) {
-      await methodChannel.invokeMethod("openOtplessSdk");
-    } else {
-      await methodChannel
-          .invokeMethod("openOtplessSdk", {'arg': json.encode(jsonObject)});
-    }
-  }
-
   Future<void> openOtplessLoginPage(
-      OtplessResultCallback callback, Map<String, dynamic>? jsonObject) async {
+      OtplessResultCallback callback, Map<String, dynamic> jsonObject) async {
     _callback = callback;
-    if (jsonObject == null) {
-      await methodChannel.invokeMethod("openOtplessLoginPage");
-    } else {
-      await methodChannel.invokeMethod(
-          "openOtplessLoginPage", {'arg': json.encode(jsonObject)});
-    }
-  }
-
-  Future<void> signInCompleted() async {
-    await methodChannel.invokeMethod("onSignComplete");
-  }
-
-  Future<void> hideFabButton() async {
-    await methodChannel.invokeMethod("hideFabButton");
+    await methodChannel
+        .invokeMethod("openOtplessLoginPage", {'arg': json.encode(jsonObject)});
   }
 
   Future<bool> isWhatsAppInstalled() async {
     final isInstalled = await methodChannel.invokeMethod("isWhatsAppInstalled");
     return isInstalled as bool;
+  }
+
+  Future<void> setLoaderVisibility(bool visibility) async {
+    await methodChannel
+        .invokeMethod("setLoaderVisibility", {'arg': visibility});
   }
 }

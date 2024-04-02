@@ -10,30 +10,18 @@ class Otpless {
   }
 
   /*
-    Function to redirect to Whatsapp application
-  */
-  Future<void> start(OtplessResultCallback callback,
-      {Map<String, dynamic>? jsonObject}) async {
-    _otplessChannel.openOtpless(callback, jsonObject);
-  }
-
-  /*
     open login page
   */
-  Future<void> openLoginPage(OtplessResultCallback callback,
-      {Map<String, dynamic>? jsonObject}) async {
+  Future<void> openLoginPage(
+      OtplessResultCallback callback, Map<String, dynamic> jsonObject) async {
     _otplessChannel.openOtplessLoginPage(callback, jsonObject);
-  }
-
-  Future<void> signInCompleted() async {
-    _otplessChannel.signInCompleted();
-  }
-
-  Future<void> hideFabButton() async {
-    _otplessChannel.hideFabButton();
   }
 
   Future<bool> isWhatsAppInstalled() async {
     return _otplessChannel.isWhatsAppInstalled();
+  }
+
+  Future<void> setLoaderVisibility(bool visibility) async {
+    return _otplessChannel.setLoaderVisibility(visibility);
   }
 }

@@ -58,4 +58,4 @@
 * Google phone hint.
 
 ## 2.1.1
-* android sdk version updated to 2.2.3
+* android sdk version updated to 2.2.6 and ios sdk version updated to 2.0.6
