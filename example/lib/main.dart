@@ -18,6 +18,7 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   String _dataResponse = 'Unknown';
   final _otplessFlutterPlugin = Otpless();
+  var loaderVisibility = true;
   final TextEditingController urlTextContoller = TextEditingController();
 
   @override
@@ -28,20 +29,9 @@ class _MyAppState extends State<MyApp> {
 
   // ** Function that is called when page is loaded
   // ** We can check the auth state in this function
-  Future<void> startOtpless() async {
-    _otplessFlutterPlugin.start((result) {
-      var message = "";
-      if (result['data'] != null) {
-        final token = result['data']['token'];
-        message = "token: $token";
-      }
-      setState(() {
-        _dataResponse = message ?? "Unknown";
-      });
-    });
-  }
 
   Future<void> openLoginPage() async {
+    Map<String, dynamic> arg = {'appId': "YOUR_APPID"};
     _otplessFlutterPlugin.openLoginPage((result) {
       var message = "";
       if (result['data'] != null) {
@@ -51,7 +41,12 @@ class _MyAppState extends State<MyApp> {
       setState(() {
         _dataResponse = message ?? "Unknown";
       });
-    });
+    }, arg);
+  }
+
+  Future<void> changeLoaderVisibility() async {
+    loaderVisibility = !loaderVisibility;
+    _otplessFlutterPlugin.setLoaderVisibility(loaderVisibility);
   }
 
   @override
@@ -75,15 +70,11 @@ class _MyAppState extends State<MyApp> {
               child: Column(
                 children: [
                   CupertinoButton.filled(
-                      child: Text("Login With Whatsapp"),
-                      onPressed: startOtpless),
-                  CupertinoButton.filled(
                       child: Text("Open Otpless Login Page"),
                       onPressed: openLoginPage),
                   CupertinoButton.filled(
-                      child: Text("remove button"),
-                      onPressed: (() =>
-                          _otplessFlutterPlugin.signInCompleted())),
+                      child: Text("Toggle Loader Visibility"),
+                      onPressed: changeLoaderVisibility),
                   Text(""),
                   SizedBox(height: 100),
                   SizedBox(height: 10),

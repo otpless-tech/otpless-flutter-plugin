@@ -20,37 +20,20 @@ public class SwiftOtplessFlutterPlugin: NSObject, FlutterPlugin {
   }
 
   public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
-      if(call.method == "openOtplessSdk"){
-        let viewController = UIApplication.shared.delegate?.window??.rootViewController;
-          Otpless.sharedInstance.delegate = self
-          if let args = call.arguments as? [String: Any] {
-              if let jsonString = args["arg"] as? String {
-                  if let params = SwiftOtplessFlutterPlugin.convertToDictionary(text: jsonString) {
-                      Otpless.sharedInstance.startwithParams(vc: viewController!, params: params)
-                      return
-                  }
-              }
-          }
-          Otpless.sharedInstance.start(vc: viewController!)
-      } else if(call.method == "hideFabButton"){
-          Otpless.sharedInstance.shouldHideButton(hide: true)
-          result("")
-      }
-      else if(call.method == "isWhatsAppInstalled"){
+      if(call.method == "isWhatsAppInstalled"){
           result(Otpless.sharedInstance.isWhatsappInstalled())
-      }
-      else if(call.method == "onSignComplete"){
-          Otpless.sharedInstance.onSignedInComplete()
       }
       else if(call.method == "openOtplessLoginPage"){
           guard let viewController = UIApplication.shared.delegate?.window??.rootViewController else {return}
           Otpless.sharedInstance.delegate = self;
-          Otpless.sharedInstance.shouldHideButton(hide: true);
-          SwiftOtplessFlutterPlugin.filterParamsCondition(call, on: {param in
-              Otpless.sharedInstance.showOtplessLoginPageWithParams(vc: viewController, params: param)
-          }, off: {
-              Otpless.sharedInstance.showOtplessLoginPage(vc: viewController)
-          });
+          let args = call.arguments as! [String: Any]
+          let jsonString = args["arg"] as! String
+          let argument: [String: Any] = SwiftOtplessFlutterPlugin.convertToDictionary(text: jsonString)!
+          let appId: String = argument["appId"] as! String
+          var params: [String: Any]? = argument["params"] as? [String: Any]
+          Otpless.sharedInstance.showOtplessLoginPageWithParams(appId: appId, vc: viewController, params: params)
+      } else if (call.method == "setLoaderVisibility") {
+          // do nothing
       }
   }
     

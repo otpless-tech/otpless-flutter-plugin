@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.util.Log
 import androidx.annotation.NonNull
+import com.otpless.dto.OtplessRequest
 import com.otpless.utils.Utility
 import com.otpless.main.OtplessManager
 import com.otpless.main.OtplessView
@@ -15,11 +16,12 @@ import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
+import io.flutter.plugin.common.PluginRegistry.ActivityResultListener
 import org.json.JSONObject
 
 
 /** OtplessFlutterPlugin */
-class OtplessFlutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
+class OtplessFlutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, ActivityResultListener {
   /// The MethodChannel that will the communication between Flutter and native Android
   ///
   /// This local reference serves to register the plugin with the Flutter Engine and unregister it
@@ -39,7 +41,7 @@ class OtplessFlutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
     // safe check
     if (!this::otplessView.isInitialized) return
     when (call.method) {
-      "openOtplessSdk", "openOtplessLoginPage" -> {
+      "openOtplessLoginPage" -> {
         result.success("")
         val jsonString = call.argument<String>("arg")
         val jsonObject = if (jsonString != null) {
@@ -55,22 +57,17 @@ class OtplessFlutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
           Log.d(Tag, "No json object is passed.")
           null
         }
-        if (call.method == "openOtplessSdk") {
-          openOtpless(jsonObject)
-        } else {
-          openOtplessLoginPage(jsonObject)
+        if (jsonObject == null) {
+          throw Exception("json argument not provided")
         }
+        openOtplessLoginPage(jsonObject)
       }
 
-      "onSignComplete" -> {
+      "setLoaderVisibility" -> {
+        val visibility = call.argument<Boolean>("arg") ?: true
+        result.success("")
         activity.runOnUiThread {
-          otplessView.onSignInCompleted()
-        }
-      }
-
-      "hideFabButton" -> {
-        activity.runOnUiThread {
-          otplessView.showOtplessFab(false)
+          otplessView.setLoaderVisibility(visibility)
         }
       }
 
@@ -89,18 +86,30 @@ class OtplessFlutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
     otplessView.verifyIntent(intent)
   }
 
-  private fun openOtpless(json: JSONObject?) {
-    activity.runOnUiThread {
-      otplessView.startOtpless(json) {
-        Log.d(Tag, "callback openOtpless with response $it")
-        channel.invokeMethod("otpless_callback_event", it.toJsonString())
+  private fun openOtplessLoginPage(json:JSONObject) {
+    val otplessRequest = OtplessRequest(json.getString("appId"))
+    json.optJSONObject("params")?.let { params ->
+      // checking and adding uxmode
+      val uxMode = params.optString("uxmode")
+      if (uxMode.isNotEmpty()) {
+        otplessRequest.setUxmode(uxMode)
+        params.remove("uxmode")
+      }
+      // checking and adding locale
+      val locale = params.optString("locale")
+      if (locale.isNotEmpty()) {
+        otplessRequest.setLocale(locale)
+        params.remove("locale")
+      }
+      // adding other extra params
+      for (key in params.keys()) {
+        val value = params.optString(key)
+        if (value.isEmpty()) continue
+        otplessRequest.addExtras(key, value)
       }
     }
-  }
-
-  private fun openOtplessLoginPage(json:JSONObject?) {
     activity.runOnUiThread {
-      otplessView.showOtplessLoginPage(json) {
+      otplessView.showOtplessLoginPage(otplessRequest) {
         Log.d(Tag, "callback openOtplessLoginPage with response $it")
         channel.invokeMethod("otpless_callback_event", it.toJsonString())
       }
@@ -119,6 +128,7 @@ class OtplessFlutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
   override fun onAttachedToActivity(binding: ActivityPluginBinding) {
     activity = binding.activity
     otplessView = OtplessManager.getInstance().getOtplessView(activity)
+    binding.addActivityResultListener(this)
   }
 
   override fun onDetachedFromActivityForConfigChanges() {
@@ -135,5 +145,12 @@ class OtplessFlutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
 
   companion object {
     private const val Tag = "OtplessFlutterPlugin"
+    private const val OTPLESS_PHONE_HINT_REQUEST = 9767355;
+  }
+
+  override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?): Boolean {
+    if (requestCode != OTPLESS_PHONE_HINT_REQUEST || !this::otplessView.isInitialized) return false
+    otplessView.onActivityResult(requestCode, resultCode, data)
+    return true
   }
 }
