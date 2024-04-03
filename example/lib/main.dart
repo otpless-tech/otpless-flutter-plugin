@@ -31,7 +31,7 @@ class _MyAppState extends State<MyApp> {
   // ** We can check the auth state in this function
 
   Future<void> openLoginPage() async {
-    Map<String, dynamic> arg = {'appId': "YYTFDI0602X3O5T5SIS5"};
+    Map<String, dynamic> arg = {'appId': "YOUR_APPID"};
     _otplessFlutterPlugin.openLoginPage((result) {
       var message = "";
       if (result['data'] != null) {
