@@ -49,6 +49,7 @@ class MethodChannelOtplessFlutter extends OtplessFlutterPlatform {
 
   Future<void> startHeadless(
       OtplessResultCallback callback, Map<String, dynamic> jsonObject) async {
+    _callback = callback;
     await methodChannel
         .invokeMethod("startHeadless", {'arg': json.encode(jsonObject)});
   }
