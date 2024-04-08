@@ -59,3 +59,6 @@
 
 ## 2.1.1
 * android sdk version updated to 2.2.6 and ios sdk version updated to 2.0.6
+
+## 2.1.2
+* android and ios headless integration

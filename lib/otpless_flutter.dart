@@ -24,4 +24,12 @@ class Otpless {
   Future<void> setLoaderVisibility(bool visibility) async {
     return _otplessChannel.setLoaderVisibility(visibility);
   }
+
+  /*
+    start headless
+  */
+  Future<void> startHeadless(
+      OtplessResultCallback callback, Map<String, dynamic> jsonObject) async {
+    _otplessChannel.startHeadless(callback, jsonObject);
+  }
 }

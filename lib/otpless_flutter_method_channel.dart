@@ -46,4 +46,10 @@ class MethodChannelOtplessFlutter extends OtplessFlutterPlatform {
     await methodChannel
         .invokeMethod("setLoaderVisibility", {'arg': visibility});
   }
+
+  Future<void> startHeadless(
+      OtplessResultCallback callback, Map<String, dynamic> jsonObject) async {
+    await methodChannel
+        .invokeMethod("startHeadless", {'arg': json.encode(jsonObject)});
+  }
 }
