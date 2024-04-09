@@ -30,12 +30,38 @@ public class SwiftOtplessFlutterPlugin: NSObject, FlutterPlugin {
           let jsonString = args["arg"] as! String
           let argument: [String: Any] = SwiftOtplessFlutterPlugin.convertToDictionary(text: jsonString)!
           let appId: String = argument["appId"] as! String
-          var params: [String: Any]? = argument["params"] as? [String: Any]
+          let params: [String: Any]? = argument["params"] as? [String: Any]
           Otpless.sharedInstance.showOtplessLoginPageWithParams(appId: appId, vc: viewController, params: params)
       } else if (call.method == "setLoaderVisibility") {
           // do nothing
+      } else if (call.method == "startHeadless") {
+          guard let viewController = UIApplication.shared.delegate?.window??.rootViewController else {return}
+          Otpless.sharedInstance.delegate = self;
+          let args = call.arguments as! [String: Any]
+          let jsonString = args["arg"] as! String
+          let data = jsonString.data(using: .utf8)!
+          let argument: [String: String] = try! JSONSerialization.jsonObject(with: data, options: []) as! [String: String]
+          let appId: String = argument["appId"]!
+          Otpless.sharedInstance.initialise(vc: viewController, appId: appId)
+          Otpless.sharedInstance.startHeadless(headlessRequest: createHeadlessRequest(args: argument))
       }
   }
+  
+    private func createHeadlessRequest(args: [String: String]) -> HeadlessRequest {
+        let headlessRequest = HeadlessRequest()
+        if let phone = args["phone"] {
+            let countryCode: String = args["countryCode"]!
+            headlessRequest.setPhoneNumber(number: phone, withCountryCode: countryCode)
+        } else if let email = args["email"] {
+            headlessRequest.setEmail(email)
+        } else if let channelType = args["channelType"] {
+            headlessRequest.setChannelType(channelType)
+        }
+        if let otp = args["otp"] {
+//            headlessRequest.setOtp(otp: otp)
+        }
+        return headlessRequest
+    }
     
     static func filterParamsCondition(_ call: FlutterMethodCall, on onHaving: ([String: Any]) -> Void, off onNotHaving: () -> Void) {
         if let args = call.arguments as? [String: Any] {

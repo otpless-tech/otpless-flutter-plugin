@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
@@ -31,7 +33,7 @@ class _MyAppState extends State<MyApp> {
   // ** We can check the auth state in this function
 
   Future<void> openLoginPage() async {
-    Map<String, dynamic> arg = {'appId': "YOUR_APPID"};
+    Map<String, dynamic> arg = {'appId': "YYTFDI0602X3O5T5SIS5"};
     _otplessFlutterPlugin.openLoginPage((result) {
       var message = "";
       if (result['data'] != null) {
@@ -40,6 +42,18 @@ class _MyAppState extends State<MyApp> {
       }
       setState(() {
         _dataResponse = message ?? "Unknown";
+      });
+    }, arg);
+  }
+
+  Future<void> startHeadlessWithWhatsapp() async {
+    Map<String, dynamic> arg = {
+      'appId': "YYTFDI0602X3O5T5SIS5",
+      'channelType': "WHATSAPP"
+    };
+    _otplessFlutterPlugin.startHeadless((result) {
+      setState(() {
+        _dataResponse = jsonEncode(result);
       });
     }, arg);
   }
@@ -75,6 +89,9 @@ class _MyAppState extends State<MyApp> {
                   CupertinoButton.filled(
                       child: Text("Toggle Loader Visibility"),
                       onPressed: changeLoaderVisibility),
+                  CupertinoButton.filled(
+                      child: Text("Start Headless With Whatsapp"),
+                      onPressed: startHeadlessWithWhatsapp),
                   Text(""),
                   SizedBox(height: 100),
                   SizedBox(height: 10),
