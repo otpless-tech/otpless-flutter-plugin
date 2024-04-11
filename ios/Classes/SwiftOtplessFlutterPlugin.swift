@@ -35,15 +35,28 @@ public class SwiftOtplessFlutterPlugin: NSObject, FlutterPlugin {
       } else if (call.method == "setLoaderVisibility") {
           // do nothing
       } else if (call.method == "startHeadless") {
-          guard let viewController = UIApplication.shared.delegate?.window??.rootViewController else {return}
-          Otpless.sharedInstance.delegate = self;
+          Otpless.sharedInstance.headlessDelegate = self;
           let args = call.arguments as! [String: Any]
           let jsonString = args["arg"] as! String
           let data = jsonString.data(using: .utf8)!
           let argument: [String: String] = try! JSONSerialization.jsonObject(with: data, options: []) as! [String: String]
-          let appId: String = argument["appId"]!
+          let headlessRequest = createHeadlessRequest(args: argument)
+          if let otp = argument["otp"] {
+              Otpless.sharedInstance.verifyOTP(otp: otp, headlessRequest: headlessRequest)
+          } else {
+              Otpless.sharedInstance.startHeadless(headlessRequest: createHeadlessRequest(args: argument))
+          }
+      } else if (call.method == "initHeadless") {
+          guard let viewController = UIApplication.shared.delegate?.window??.rootViewController else {return}
+          let args = call.arguments as! [String: Any]
+          let appId = args["arg"] as! String
           Otpless.sharedInstance.initialise(vc: viewController, appId: appId)
-          Otpless.sharedInstance.startHeadless(headlessRequest: createHeadlessRequest(args: argument))
+      } else if (call.method == "enableOneTap") {
+          let args = call.arguments as! [String: Any]
+          let isOnetapEnabled = args["arg"] as! Bool
+          Otpless.sharedInstance.setOneTapEnabled(isOnetapEnabled)
+      } else if (call.method == "setHeadlessCallback") {
+          Otpless.sharedInstance.headlessDelegate = self;
       }
   }
   
@@ -56,9 +69,6 @@ public class SwiftOtplessFlutterPlugin: NSObject, FlutterPlugin {
             headlessRequest.setEmail(email)
         } else if let channelType = args["channelType"] {
             headlessRequest.setChannelType(channelType)
-        }
-        if let otp = args["otp"] {
-//            headlessRequest.setOtp(otp: otp)
         }
         return headlessRequest
     }
@@ -118,6 +128,19 @@ public class SwiftOtplessFlutterPlugin: NSObject, FlutterPlugin {
 extension SwiftOtplessFlutterPlugin: onResponseDelegate{
     public func onResponse(response: OtplessSDK.OtplessResponse?) {
         ChannelManager.shared.invokeMethod(method: "otpless_callback_event", arguments: SwiftOtplessFlutterPlugin.convertToJsonString(response: response))
+    }
+}
+
+extension SwiftOtplessFlutterPlugin: onHeadlessResponseDelegate {
+    public func onHeadlessResponse(response: OtplessSDK.HeadlessResponse?) {
+        if response == nil {
+            return
+        }
+        let flutterResponse: [String: Any] = ["statusCode": response!.statusCode,
+                                              "responseType": response!.responseType,
+                                              "response": response!.responseData]
+        let jsonData = try! JSONSerialization.data(withJSONObject: flutterResponse, options: [])
+        ChannelManager.shared.invokeMethod(method: "otpless_callback_event", arguments: String(data: jsonData, encoding: .utf8))
     }
 }
 
