@@ -6,6 +6,7 @@ import android.content.Intent
 import android.util.Log
 import androidx.annotation.NonNull
 import com.otpless.dto.HeadlessRequest
+import com.otpless.dto.HeadlessResponse
 import com.otpless.dto.OtplessRequest
 import com.otpless.utils.Utility
 import com.otpless.main.OtplessManager
@@ -84,6 +85,25 @@ class OtplessFlutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, Act
         startHeadless(parseJsonArg())
       }
 
+      "initHeadless" -> {
+        val appId = call.argument<String>("arg") ?: ""
+        result.success("")
+        activity.runOnUiThread {
+          otplessView.initHeadless(appId, null)
+        }
+      }
+
+      "enableOneTap" -> {
+        val isEnabled = call.argument<Boolean>("arg") ?: true
+        result.success("")
+        otplessView.enableOneTap(isEnabled)
+      }
+
+      "setHeadlessCallback" -> {
+        result.success("")
+        otplessView.setHeadlessCallback(this::onHeadlessResultCallback)
+      }
+
       else -> {
         result.notImplemented()
       }
@@ -125,19 +145,20 @@ class OtplessFlutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, Act
     }
   }
 
+  private fun onHeadlessResultCallback(headlessResponse: HeadlessResponse) {
+    Log.d(Tag, "callback openOtplessLoginPage with response $headlessResponse")
+    channel.invokeMethod("otpless_callback_event", convertHeadlessResponseToJson(headlessResponse).toString())
+  }
+
   private fun startHeadless(json: JSONObject) {
     val headlessRequest = parseHeadlessRequest(json)
     activity.runOnUiThread {
-      otplessView.startHeadless(headlessRequest) {
-        Log.d(Tag, "callback openOtplessLoginPage with response $it")
-        channel.invokeMethod("otpless_callback_event", convertHeadlessResponseToJson(it).toString())
-      }
+      otplessView.startHeadless(headlessRequest, this::onHeadlessResultCallback)
     }
   }
 
   private fun parseHeadlessRequest(json: JSONObject): HeadlessRequest {
-    val appId: String = json.getString("appId")
-    val headlessRequest = HeadlessRequest(appId)
+    val headlessRequest = HeadlessRequest()
     // check for phone
     val phone = json.optString("phone")
     if (phone.isNotEmpty()) {
