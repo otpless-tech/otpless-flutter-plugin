@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
@@ -21,10 +23,14 @@ class _MyAppState extends State<MyApp> {
   var loaderVisibility = true;
   final TextEditingController urlTextContoller = TextEditingController();
 
+  String phoneOrEmail = '';
+  String otp = '';
+
   @override
   void initState() {
     super.initState();
-    // _otplessFlutterPlugin.hideFabButton();
+    _otplessFlutterPlugin.initHeadless("YOUR_APPID");
+    _otplessFlutterPlugin.setHeadlessCallback(onHeadlessResult);
   }
 
   // ** Function that is called when page is loaded
@@ -42,6 +48,39 @@ class _MyAppState extends State<MyApp> {
         _dataResponse = message ?? "Unknown";
       });
     }, arg);
+  }
+
+  Future<void> startHeadlessWithWhatsapp() async {
+    Map<String, dynamic> arg = {'channelType': "WHATSAPP"};
+    _otplessFlutterPlugin.startHeadless((result) {
+      setState(() {
+        _dataResponse = jsonEncode(result);
+      });
+    }, arg);
+  }
+
+  Future<void> startHeadlessForPhoneAndEmail() async {
+    Map<String, dynamic> arg = {};
+
+    var x = double.tryParse(phoneOrEmail);
+    if (x != null) {
+      arg["phone"] = phoneOrEmail;
+      arg["countryCode"] = "91";
+    } else {
+      arg["email"] = phoneOrEmail;
+    }
+
+    if (otp.isNotEmpty) {
+      arg["otp"] = otp;
+    }
+
+    _otplessFlutterPlugin.startHeadless(onHeadlessResult, arg);
+  }
+
+  void onHeadlessResult(dynamic result) {
+    setState(() {
+      _dataResponse = jsonEncode(result);
+    });
   }
 
   Future<void> changeLoaderVisibility() async {
@@ -75,6 +114,32 @@ class _MyAppState extends State<MyApp> {
                   CupertinoButton.filled(
                       child: Text("Toggle Loader Visibility"),
                       onPressed: changeLoaderVisibility),
+                  CupertinoButton.filled(
+                      child: Text("Start Headless With Whatsapp"),
+                      onPressed: startHeadlessWithWhatsapp),
+                  TextField(
+                    onChanged: (value) {
+                      setState(() {
+                        phoneOrEmail = value;
+                      });
+                    },
+                    decoration: InputDecoration(
+                      hintText: 'Enter Phone or email here',
+                    ),
+                  ),
+                  TextField(
+                    onChanged: (value) {
+                      setState(() {
+                        otp = value;
+                      });
+                    },
+                    decoration: InputDecoration(
+                      hintText: 'Enter your otp here',
+                    ),
+                  ),
+                  CupertinoButton.filled(
+                      child: Text("Start with Phone and Email"),
+                      onPressed: startHeadlessForPhoneAndEmail),
                   Text(""),
                   SizedBox(height: 100),
                   SizedBox(height: 10),

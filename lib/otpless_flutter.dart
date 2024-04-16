@@ -24,4 +24,24 @@ class Otpless {
   Future<void> setLoaderVisibility(bool visibility) async {
     return _otplessChannel.setLoaderVisibility(visibility);
   }
+
+  /*
+    start headless
+  */
+  Future<void> startHeadless(
+      OtplessResultCallback callback, Map<String, dynamic> jsonObject) async {
+    _otplessChannel.startHeadless(callback, jsonObject);
+  }
+
+  Future<void> initHeadless(String appid) async {
+    _otplessChannel.initHeadless(appid);
+  }
+
+  Future<void> enableOneTap(bool isEnable) async {
+    _otplessChannel.enableOneTap(isEnable);
+  }
+
+  Future<void> setHeadlessCallback(OtplessResultCallback callback) async {
+    _otplessChannel.setHeadlessCallback(callback);
+  }
 }

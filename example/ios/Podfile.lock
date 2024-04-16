@@ -2,8 +2,8 @@ PODS:
   - Flutter (1.0.0)
   - otpless_flutter (0.0.4):
     - Flutter
-    - OtplessSDK (= 2.0.6)
-  - OtplessSDK (2.0.6)
+    - OtplessSDK (= 2.1.1)
+  - OtplessSDK (2.1.1)
   - uni_links (0.0.1):
     - Flutter
 
@@ -26,8 +26,8 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
-  otpless_flutter: 6b652b9160ad598ccc134e57a967710d6d4d3b0d
-  OtplessSDK: c248cdf5be316f8fe50a6d550801a17d95ec8784
+  otpless_flutter: f362824fbefc368cefd4164ae89f951cb8ed2811
+  OtplessSDK: a8d6d853e54d10258826bd00eb7d9417edf615b2
   uni_links: d97da20c7701486ba192624d99bffaaffcfc298a
 
 PODFILE CHECKSUM: ef19549a9bc3046e7bb7d2fab4d021637c0c58a3

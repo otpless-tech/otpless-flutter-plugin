@@ -5,6 +5,8 @@ import android.content.Context
 import android.content.Intent
 import android.util.Log
 import androidx.annotation.NonNull
+import com.otpless.dto.HeadlessRequest
+import com.otpless.dto.HeadlessResponse
 import com.otpless.dto.OtplessRequest
 import com.otpless.utils.Utility
 import com.otpless.main.OtplessManager
@@ -40,27 +42,30 @@ class OtplessFlutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, Act
   override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
     // safe check
     if (!this::otplessView.isInitialized) return
+    fun parseJsonArg(): JSONObject {
+      val jsonString = call.argument<String>("arg")
+      val jsonObject = if (jsonString != null) {
+        try {
+          Log.d(Tag, "arg: $jsonString")
+          JSONObject(jsonString)
+        } catch (ex: Exception) {
+          Log.d(Tag, "wrong json object is passed. error ${ex.message}")
+          ex.printStackTrace()
+          null
+        }
+      } else {
+        Log.d(Tag, "No json object is passed.")
+        null
+      }
+      if (jsonObject == null) {
+        throw Exception("json argument not provided")
+      }
+      return jsonObject
+    }
     when (call.method) {
       "openOtplessLoginPage" -> {
         result.success("")
-        val jsonString = call.argument<String>("arg")
-        val jsonObject = if (jsonString != null) {
-          try {
-            Log.d(Tag, "arg: $jsonString")
-            JSONObject(jsonString)
-          } catch (ex: Exception) {
-            Log.d(Tag, "wrong json object is passed. error ${ex.message}")
-            ex.printStackTrace()
-            null
-          }
-        } else {
-          Log.d(Tag, "No json object is passed.")
-          null
-        }
-        if (jsonObject == null) {
-          throw Exception("json argument not provided")
-        }
-        openOtplessLoginPage(jsonObject)
+        openOtplessLoginPage(parseJsonArg())
       }
 
       "setLoaderVisibility" -> {
@@ -73,6 +78,30 @@ class OtplessFlutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, Act
 
       "isWhatsAppInstalled" -> {
         result.success(Utility.isWhatsAppInstalled(activity))
+      }
+
+      "startHeadless" -> {
+        result.success("")
+        startHeadless(parseJsonArg())
+      }
+
+      "initHeadless" -> {
+        val appId = call.argument<String>("arg") ?: ""
+        result.success("")
+        activity.runOnUiThread {
+          otplessView.initHeadless(appId, null)
+        }
+      }
+
+      "enableOneTap" -> {
+        val isEnabled = call.argument<Boolean>("arg") ?: true
+        result.success("")
+        otplessView.enableOneTap(isEnabled)
+      }
+
+      "setHeadlessCallback" -> {
+        result.success("")
+        otplessView.setHeadlessCallback(this::onHeadlessResultCallback)
       }
 
       else -> {
@@ -114,6 +143,46 @@ class OtplessFlutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, Act
         channel.invokeMethod("otpless_callback_event", it.toJsonString())
       }
     }
+  }
+
+  private fun onHeadlessResultCallback(headlessResponse: HeadlessResponse) {
+    Log.d(Tag, "callback openOtplessLoginPage with response $headlessResponse")
+    channel.invokeMethod("otpless_callback_event", convertHeadlessResponseToJson(headlessResponse).toString())
+  }
+
+  private fun startHeadless(json: JSONObject) {
+    val headlessRequest = parseHeadlessRequest(json)
+    activity.runOnUiThread {
+      otplessView.startHeadless(headlessRequest, this::onHeadlessResultCallback)
+    }
+  }
+
+  private fun parseHeadlessRequest(json: JSONObject): HeadlessRequest {
+    val headlessRequest = HeadlessRequest()
+    // check for phone
+    val phone = json.optString("phone")
+    if (phone.isNotEmpty()) {
+      val countryCode = json.getString("countryCode")
+      headlessRequest.setPhoneNumber(countryCode, phone)
+    } else {
+      // check for email
+      val email = json.optString("email")
+      // check for otp in case of phone and email
+      if (phone.isNotEmpty() || email.isNotEmpty()) {
+        val otp = json.optString("otp")
+        if (otp.isNotEmpty()) {
+          headlessRequest.setOtp(otp)
+        }
+      }
+      if (email.isNotEmpty()) {
+        headlessRequest.setEmail(email)
+      } else {
+        // check for channel type
+        val channelType = json.getString("channelType")
+        headlessRequest.setChannelType(channelType)
+      }
+    }
+    return headlessRequest
   }
 
   fun onBackPressed(): Boolean {
