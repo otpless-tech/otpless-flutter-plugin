@@ -62,3 +62,6 @@
 
 ## 2.1.2
 * android and ios headless integration
+
+## 2.1.3
+* bug fixes
