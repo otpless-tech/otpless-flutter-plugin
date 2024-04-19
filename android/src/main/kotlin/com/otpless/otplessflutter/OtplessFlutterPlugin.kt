@@ -164,18 +164,20 @@ class OtplessFlutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, Act
     if (phone.isNotEmpty()) {
       val countryCode = json.getString("countryCode")
       headlessRequest.setPhoneNumber(countryCode, phone)
+      val otp = json.optString("otp")
+      if (otp.isNotEmpty()) {
+        headlessRequest.setOtp(otp)
+      }
     } else {
       // check for email
       val email = json.optString("email")
       // check for otp in case of phone and email
-      if (phone.isNotEmpty() || email.isNotEmpty()) {
+      if (email.isNotEmpty()) {
+        headlessRequest.setEmail(email)
         val otp = json.optString("otp")
         if (otp.isNotEmpty()) {
           headlessRequest.setOtp(otp)
         }
-      }
-      if (email.isNotEmpty()) {
-        headlessRequest.setEmail(email)
       } else {
         // check for channel type
         val channelType = json.getString("channelType")
