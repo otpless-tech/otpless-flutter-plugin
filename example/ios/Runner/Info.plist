@@ -31,7 +31,7 @@
 			<string>otpless</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>otpless.your_appid_in_smallcase</string>
+				<string>otpless.5e62zcanetd9urnxpz80</string>
 			</array>
 		</dict>
 	</array>
@@ -44,6 +44,8 @@
 		<string>whatsapp</string>
 	</array>
 	<key>LSRequiresIPhoneOS</key>
+	<true/>
+	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
@@ -64,7 +66,31 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
-	<key>UIApplicationSupportsIndirectInputEvents</key>
-	<true/>
+    <key>NSAppTransportSecurity</key>
+        <dict>
+            <key>NSAllowsArbitraryLoads</key>
+            <true/>
+            <key>NSExceptionDomains</key>
+            <dict>
+                <key>80.in.safr.sekuramobile.com</key>
+                <dict>
+                    <key>NSIncludesSubdomains</key>
+                    <true/>
+                    <key>NSTemporaryExceptionAllowsInsecureHTTPLoads</key>
+                    <true/>
+                    <key>NSTemporaryExceptionMinimumTLSVersion</key>
+                    <string>TLSv1.1</string>
+                </dict>
+                <key>partnerapi.jio.com</key>
+                <dict>
+                    <key>NSIncludesSubdomains</key>
+                    <true/>
+                    <key>NSTemporaryExceptionAllowsInsecureHTTPLoads</key>
+                    <true/>
+                    <key>NSTemporaryExceptionMinimumTLSVersion</key>
+                    <string>TLSv1.1</string>
+                </dict>
+            </dict>
+        </dict>
 </dict>
 </plist>
