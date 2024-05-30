@@ -57,6 +57,13 @@ public class SwiftOtplessFlutterPlugin: NSObject, FlutterPlugin {
           Otpless.sharedInstance.setOneTapEnabled(isOnetapEnabled)
       } else if (call.method == "setHeadlessCallback") {
           Otpless.sharedInstance.headlessDelegate = self;
+      } else if (call.method == "setWebviewInspectable") {
+          let args = call.arguments as! [String: Any]
+          var isInspectable = args["arg"] as? Bool
+          if isInspectable == nil {
+              isInspectable = false
+          }
+          Otpless.sharedInstance.webviewInspectable = isInspectable!
       }
   }
   

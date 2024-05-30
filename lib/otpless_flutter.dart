@@ -44,4 +44,8 @@ class Otpless {
   Future<void> setHeadlessCallback(OtplessResultCallback callback) async {
     _otplessChannel.setHeadlessCallback(callback);
   }
+
+  Future<void> setWebviewInspectable(bool isInspectable) async {
+    _otplessChannel.setWebviewInspectable(isInspectable);
+  }
 }

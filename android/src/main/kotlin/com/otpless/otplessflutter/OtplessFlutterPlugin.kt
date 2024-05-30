@@ -104,6 +104,10 @@ class OtplessFlutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, Act
         otplessView.setHeadlessCallback(this::onHeadlessResultCallback)
       }
 
+      "setWebviewInspectable" -> {
+        // webview is always inspectable in debug mode
+      }
+
       else -> {
         result.notImplemented()
       }
