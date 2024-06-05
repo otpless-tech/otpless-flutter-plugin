@@ -28,11 +28,13 @@ class _MyAppState extends State<MyApp> {
   String otp = '';
   bool isInitIos = false;
 
+  static const String appId = "YOUR_APPID";
+
   @override
   void initState() {
     super.initState();
     if (Platform.isAndroid) {
-      _otplessFlutterPlugin.initHeadless("5e62zcanetd9urnxpz80");
+      _otplessFlutterPlugin.initHeadless(appId);
       _otplessFlutterPlugin.setHeadlessCallback(onHeadlessResult);
       debugPrint("init headless sdk is called for android");
     }
@@ -43,13 +45,13 @@ class _MyAppState extends State<MyApp> {
   // ** We can check the auth state in this function
 
   Future<void> openLoginPage() async {
-    Map<String, dynamic> arg = {'appId': "5e62zcanetd9urnxpz80"};
+    Map<String, dynamic> arg = {'appId': appId};
     _otplessFlutterPlugin.openLoginPage(onHeadlessResult, arg);
   }
 
   Future<void> startHeadlessWithWhatsapp() async {
     if (Platform.isIOS && !isInitIos) {
-      _otplessFlutterPlugin.initHeadless("5e62zcanetd9urnxpz80");
+      _otplessFlutterPlugin.initHeadless(appId);
       _otplessFlutterPlugin.setHeadlessCallback(onHeadlessResult);
       isInitIos = true;
       debugPrint("init headless sdk is called for ios");
@@ -61,7 +63,7 @@ class _MyAppState extends State<MyApp> {
 
   Future<void> startHeadlessForPhoneAndEmail() async {
     if (Platform.isIOS && !isInitIos) {
-      _otplessFlutterPlugin.initHeadless("5e62zcanetd9urnxpz80");
+      _otplessFlutterPlugin.initHeadless(appId);
       _otplessFlutterPlugin.setHeadlessCallback(onHeadlessResult);
       isInitIos = true;
       debugPrint("init headless sdk is called for ios");
