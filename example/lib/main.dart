@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -25,43 +26,50 @@ class _MyAppState extends State<MyApp> {
 
   String phoneOrEmail = '';
   String otp = '';
+  bool isInitIos = false;
+
+  static const String appId = "YOUR_APPID";
 
   @override
   void initState() {
     super.initState();
-    _otplessFlutterPlugin.initHeadless("YOUR_APPID");
-    _otplessFlutterPlugin.setHeadlessCallback(onHeadlessResult);
+    if (Platform.isAndroid) {
+      _otplessFlutterPlugin.initHeadless(appId);
+      _otplessFlutterPlugin.setHeadlessCallback(onHeadlessResult);
+      debugPrint("init headless sdk is called for android");
+    }
+    _otplessFlutterPlugin.setWebviewInspectable(true);
   }
 
   // ** Function that is called when page is loaded
   // ** We can check the auth state in this function
 
   Future<void> openLoginPage() async {
-    Map<String, dynamic> arg = {'appId': "YOUR_APPID"};
-    _otplessFlutterPlugin.openLoginPage((result) {
-      var message = "";
-      if (result['data'] != null) {
-        final token = result['data']['token'];
-        message = "token: $token";
-      }
-      setState(() {
-        _dataResponse = message ?? "Unknown";
-      });
-    }, arg);
+    Map<String, dynamic> arg = {'appId': appId};
+    _otplessFlutterPlugin.openLoginPage(onHeadlessResult, arg);
   }
 
   Future<void> startHeadlessWithWhatsapp() async {
+    if (Platform.isIOS && !isInitIos) {
+      _otplessFlutterPlugin.initHeadless(appId);
+      _otplessFlutterPlugin.setHeadlessCallback(onHeadlessResult);
+      isInitIos = true;
+      debugPrint("init headless sdk is called for ios");
+      return;
+    }
     Map<String, dynamic> arg = {'channelType': "WHATSAPP"};
-    _otplessFlutterPlugin.startHeadless((result) {
-      setState(() {
-        _dataResponse = jsonEncode(result);
-      });
-    }, arg);
+    _otplessFlutterPlugin.startHeadless(onHeadlessResult, arg);
   }
 
   Future<void> startHeadlessForPhoneAndEmail() async {
+    if (Platform.isIOS && !isInitIos) {
+      _otplessFlutterPlugin.initHeadless(appId);
+      _otplessFlutterPlugin.setHeadlessCallback(onHeadlessResult);
+      isInitIos = true;
+      debugPrint("init headless sdk is called for ios");
+      return;
+    }
     Map<String, dynamic> arg = {};
-
     var x = double.tryParse(phoneOrEmail);
     if (x != null) {
       arg["phone"] = phoneOrEmail;

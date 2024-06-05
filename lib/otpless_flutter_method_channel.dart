@@ -66,4 +66,9 @@ class MethodChannelOtplessFlutter extends OtplessFlutterPlatform {
     _callback = callback;
     await methodChannel.invokeMethod("setHeadlessCallback");
   }
+
+  Future<void> setWebviewInspectable(bool isInspectable) async {
+    await methodChannel
+        .invokeMapMethod("setWebviewInspectable", {'arg': isInspectable});
+  }
 }
