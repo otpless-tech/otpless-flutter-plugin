@@ -68,3 +68,6 @@
 
 ## 2.1.4
 * silent auth
+
+## 2.1.5
+* low memory instance save fix

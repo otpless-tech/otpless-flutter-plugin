@@ -89,7 +89,7 @@ class OtplessFlutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, Act
         val appId = call.argument<String>("arg") ?: ""
         result.success("")
         activity.runOnUiThread {
-          otplessView.initHeadless(appId, null)
+          otplessView.initHeadless(appId)
         }
       }
 
@@ -116,7 +116,7 @@ class OtplessFlutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, Act
 
   fun onNewIntent(intent: Intent?) {
     intent ?: return
-    otplessView.verifyIntent(intent)
+    otplessView.onNewIntent(intent)
   }
 
   private fun openOtplessLoginPage(json:JSONObject) {
