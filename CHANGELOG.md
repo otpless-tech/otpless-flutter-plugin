@@ -71,3 +71,6 @@
 
 ## 2.1.5
 * low memory instance save fix
+
+## 2.1.6
+* WhatsApp OTP auto read in android
