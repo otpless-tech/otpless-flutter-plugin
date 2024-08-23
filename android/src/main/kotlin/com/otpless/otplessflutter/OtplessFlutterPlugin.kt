@@ -8,9 +8,9 @@ import androidx.annotation.NonNull
 import com.otpless.dto.HeadlessRequest
 import com.otpless.dto.HeadlessResponse
 import com.otpless.dto.OtplessRequest
-import com.otpless.utils.Utility
 import com.otpless.main.OtplessManager
 import com.otpless.main.OtplessView
+import com.otpless.utils.Utility
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
@@ -106,6 +106,12 @@ class OtplessFlutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, Act
 
       "setWebviewInspectable" -> {
         // webview is always inspectable in debug mode
+      }
+
+      "enableDebugLogging" -> {
+        val isEnabled = call.argument<Boolean>("arg") ?: false
+        result.success("")
+        Utility.debugLogging = isEnabled
       }
 
       else -> {
@@ -221,11 +227,22 @@ class OtplessFlutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, Act
   companion object {
     private const val Tag = "OtplessFlutterPlugin"
     private const val OTPLESS_PHONE_HINT_REQUEST = 9767355;
+    private const val OTPLESS_WEBAUTHN_REGISTER_REQUEST_CODE = 9767357
+    private const val OTPLESS_WEBAUTHN_SIGNIN_REQUEST_CODE = 9767358
   }
 
   override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?): Boolean {
-    if (requestCode != OTPLESS_PHONE_HINT_REQUEST || !this::otplessView.isInitialized) return false
+    if (!isOtplessRequestCode(requestCode) || !this::otplessView.isInitialized) return false
     otplessView.onActivityResult(requestCode, resultCode, data)
     return true
+  }
+
+  private fun isOtplessRequestCode(requestCode: Int): Boolean {
+    return when (requestCode) {
+      OTPLESS_PHONE_HINT_REQUEST -> true
+      OTPLESS_WEBAUTHN_REGISTER_REQUEST_CODE -> true
+      OTPLESS_WEBAUTHN_SIGNIN_REQUEST_CODE -> true
+      else -> false
+    }
   }
 }

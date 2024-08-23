@@ -48,4 +48,8 @@ class Otpless {
   Future<void> setWebviewInspectable(bool isInspectable) async {
     _otplessChannel.setWebviewInspectable(isInspectable);
   }
+
+  Future<void> enableDebugLogging(bool isDebugLoggingEnabled) async {
+    _otplessChannel.enableDebugLogging(isDebugLoggingEnabled);
+  }
 }

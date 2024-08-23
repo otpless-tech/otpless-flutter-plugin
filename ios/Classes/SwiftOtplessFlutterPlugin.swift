@@ -64,6 +64,13 @@ public class SwiftOtplessFlutterPlugin: NSObject, FlutterPlugin {
               isInspectable = false
           }
           Otpless.sharedInstance.webviewInspectable = isInspectable!
+      } else if (call.method == "enableDebugLogging") {
+          let args = call.arguments as? [String: Any]
+          let shouldEnableDebugLogging = args?["arg"] as? Bool ?? false
+          
+          if shouldEnableDebugLogging {
+              Otpless.sharedInstance.setLoggerDelegate(delegate: self)
+          } 
       }
   }
   
@@ -148,6 +155,12 @@ extension SwiftOtplessFlutterPlugin: onHeadlessResponseDelegate {
                                               "response": response!.responseData]
         let jsonData = try! JSONSerialization.data(withJSONObject: flutterResponse, options: [])
         ChannelManager.shared.invokeMethod(method: "otpless_callback_event", arguments: String(data: jsonData, encoding: .utf8))
+    }
+}
+
+extension SwiftOtplessFlutterPlugin: OtplessLoggerDelegate {
+    public func otplessLog(string: String, type: String) {
+        print("Otpless Log of type : \(type)\n\n\(string)")
     }
 }
 

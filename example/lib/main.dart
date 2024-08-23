@@ -27,6 +27,7 @@ class _MyAppState extends State<MyApp> {
   String phoneOrEmail = '';
   String otp = '';
   bool isInitIos = false;
+  bool isDebugLoggingEnabled = false;
 
   static const String appId = "YOUR_APPID";
 
@@ -125,6 +126,7 @@ class _MyAppState extends State<MyApp> {
                   CupertinoButton.filled(
                       child: Text("Start Headless With Whatsapp"),
                       onPressed: startHeadlessWithWhatsapp),
+                  CupertinoSwitch(value: isDebugLoggingEnabled, onChanged: _handleSwitchChange),
                   TextField(
                     onChanged: (value) {
                       setState(() {
@@ -159,5 +161,12 @@ class _MyAppState extends State<MyApp> {
         ),
       ),
     );
+  }
+
+  void _handleSwitchChange(bool value) {
+    setState(() {
+      isDebugLoggingEnabled = value;
+      _otplessFlutterPlugin.enableDebugLogging(isDebugLoggingEnabled);
+    });
   }
 }
