@@ -19,11 +19,12 @@ import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
 import io.flutter.plugin.common.PluginRegistry.ActivityResultListener
+import io.flutter.plugin.common.PluginRegistry.NewIntentListener
 import org.json.JSONObject
 
 
 /** OtplessFlutterPlugin */
-class OtplessFlutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, ActivityResultListener {
+class OtplessFlutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, ActivityResultListener, NewIntentListener {
   /// The MethodChannel that will the communication between Flutter and native Android
   ///
   /// This local reference serves to register the plugin with the Flutter Engine and unregister it
@@ -120,11 +121,6 @@ class OtplessFlutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, Act
     }
   }
 
-  fun onNewIntent(intent: Intent?) {
-    intent ?: return
-    otplessView.onNewIntent(intent)
-  }
-
   private fun openOtplessLoginPage(json:JSONObject) {
     val otplessRequest = OtplessRequest(json.getString("appId"))
     json.optJSONObject("params")?.let { params ->
@@ -210,6 +206,11 @@ class OtplessFlutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, Act
     activity = binding.activity
     otplessView = OtplessManager.getInstance().getOtplessView(activity)
     binding.addActivityResultListener(this)
+    binding.addOnNewIntentListener(this)
+  }
+
+  override fun onNewIntent(intent: Intent): Boolean {
+    return otplessView.onNewIntent(intent)
   }
 
   override fun onDetachedFromActivityForConfigChanges() {
