@@ -64,10 +64,10 @@ android {
 
     signingConfigs {
         release {
-            storeFile file("../../../../../signkeys/sparshfluttersigning")
-            storePassword "9643519024"
-            keyAlias "sparsh"
-            keyPassword "9643519024"
+            storeFile file(localProperties.getProperty("storeFile"))
+            storePassword localProperties.getProperty("storePassword")
+            keyAlias localProperties.getProperty("keyAlias")
+            keyPassword localProperties.getProperty("keyPassword")
         }
     }
 

@@ -226,23 +226,10 @@ class OtplessFlutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, Act
 
   companion object {
     private const val Tag = "OtplessFlutterPlugin"
-    private const val OTPLESS_PHONE_HINT_REQUEST = 9767355;
-    private const val OTPLESS_WEBAUTHN_REGISTER_REQUEST_CODE = 9767357
-    private const val OTPLESS_WEBAUTHN_SIGNIN_REQUEST_CODE = 9767358
   }
 
   override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?): Boolean {
-    if (!isOtplessRequestCode(requestCode) || !this::otplessView.isInitialized) return false
-    otplessView.onActivityResult(requestCode, resultCode, data)
-    return true
-  }
-
-  private fun isOtplessRequestCode(requestCode: Int): Boolean {
-    return when (requestCode) {
-      OTPLESS_PHONE_HINT_REQUEST -> true
-      OTPLESS_WEBAUTHN_REGISTER_REQUEST_CODE -> true
-      OTPLESS_WEBAUTHN_SIGNIN_REQUEST_CODE -> true
-      else -> false
-    }
+    if (!this::otplessView.isInitialized) return false
+    return otplessView.onActivityResult(requestCode, resultCode, data)
   }
 }
