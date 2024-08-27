@@ -51,13 +51,30 @@ android {
         targetSdkVersion 34//flutter.targetSdkVersion
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
+
+        //region === web authin ===
+        resValue 'string', 'host', 'https://otpless.com'
+        resValue 'string', 'asset_statements', """
+           [{
+             "include": "https://otpless.com/.well-known/assetlinks.json"
+           }]
+        """
+        //endregion
+    }
+
+    signingConfigs {
+        release {
+            storeFile file(localProperties.getProperty("storeFile"))
+            storePassword localProperties.getProperty("storePassword")
+            keyAlias localProperties.getProperty("keyAlias")
+            keyPassword localProperties.getProperty("keyPassword")
+        }
     }
 
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
             // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig signingConfigs.debug
+            signingConfig signingConfigs.release
         }
     }
 }

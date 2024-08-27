@@ -71,4 +71,9 @@ class MethodChannelOtplessFlutter extends OtplessFlutterPlatform {
     await methodChannel
         .invokeMapMethod("setWebviewInspectable", {'arg': isInspectable});
   }
+
+  Future<void> enableDebugLogging(bool isEnabled) async {
+    await methodChannel
+        .invokeMethod("enableDebugLogging", {'arg': isEnabled});
+  }
 }

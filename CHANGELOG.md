@@ -74,3 +74,6 @@
 
 ## 2.1.6
 * WhatsApp OTP auto read in android
+
+## 2.1.7
+* WebAuthn implementation in android and iOS.

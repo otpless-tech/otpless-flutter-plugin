@@ -8,9 +8,9 @@ import androidx.annotation.NonNull
 import com.otpless.dto.HeadlessRequest
 import com.otpless.dto.HeadlessResponse
 import com.otpless.dto.OtplessRequest
-import com.otpless.utils.Utility
 import com.otpless.main.OtplessManager
 import com.otpless.main.OtplessView
+import com.otpless.utils.Utility
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
@@ -19,11 +19,12 @@ import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
 import io.flutter.plugin.common.PluginRegistry.ActivityResultListener
+import io.flutter.plugin.common.PluginRegistry.NewIntentListener
 import org.json.JSONObject
 
 
 /** OtplessFlutterPlugin */
-class OtplessFlutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, ActivityResultListener {
+class OtplessFlutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, ActivityResultListener, NewIntentListener {
   /// The MethodChannel that will the communication between Flutter and native Android
   ///
   /// This local reference serves to register the plugin with the Flutter Engine and unregister it
@@ -108,15 +109,16 @@ class OtplessFlutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, Act
         // webview is always inspectable in debug mode
       }
 
+      "enableDebugLogging" -> {
+        val isEnabled = call.argument<Boolean>("arg") ?: false
+        result.success("")
+        Utility.debugLogging = isEnabled
+      }
+
       else -> {
         result.notImplemented()
       }
     }
-  }
-
-  fun onNewIntent(intent: Intent?) {
-    intent ?: return
-    otplessView.onNewIntent(intent)
   }
 
   private fun openOtplessLoginPage(json:JSONObject) {
@@ -204,6 +206,11 @@ class OtplessFlutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, Act
     activity = binding.activity
     otplessView = OtplessManager.getInstance().getOtplessView(activity)
     binding.addActivityResultListener(this)
+    binding.addOnNewIntentListener(this)
+  }
+
+  override fun onNewIntent(intent: Intent): Boolean {
+    return otplessView.onNewIntent(intent)
   }
 
   override fun onDetachedFromActivityForConfigChanges() {
@@ -220,12 +227,10 @@ class OtplessFlutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, Act
 
   companion object {
     private const val Tag = "OtplessFlutterPlugin"
-    private const val OTPLESS_PHONE_HINT_REQUEST = 9767355;
   }
 
   override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?): Boolean {
-    if (requestCode != OTPLESS_PHONE_HINT_REQUEST || !this::otplessView.isInitialized) return false
-    otplessView.onActivityResult(requestCode, resultCode, data)
-    return true
+    if (!this::otplessView.isInitialized) return false
+    return otplessView.onActivityResult(requestCode, resultCode, data)
   }
 }
