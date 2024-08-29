@@ -59,18 +59,6 @@ class _MyAppState extends State<MyApp> {
     _otplessFlutterPlugin.startHeadless(onHeadlessResult, arg);
   }
 
-  Future<void> startHeadlessWithGmail() async {
-    if (Platform.isIOS && !isInitIos) {
-      _otplessFlutterPlugin.initHeadless(appId);
-      _otplessFlutterPlugin.setHeadlessCallback(onHeadlessResult);
-      isInitIos = true;
-      debugPrint("init headless sdk is called for ios");
-      return;
-    }
-    Map<String, dynamic> arg = {'channelType': "GMAIL"};
-    _otplessFlutterPlugin.startHeadless(onHeadlessResult, arg);
-  }
-
   Future<void> startHeadlessForPhoneAndEmail() async {
     if (Platform.isIOS && !isInitIos) {
       _otplessFlutterPlugin.initHeadless(appId);
@@ -141,11 +129,6 @@ class _MyAppState extends State<MyApp> {
                         CupertinoButton.filled(
                           onPressed: startHeadlessWithWhatsapp,
                           child: const Text("Start Headless With WhatsApp"),
-                        ),
-                        const SizedBox(height: 16),
-                        CupertinoButton.filled(
-                          onPressed: startHeadlessWithGmail,
-                          child: const Text("Start Headless With Gmail"),
                         ),
                         const SizedBox(height: 16),
                         CupertinoSwitch(
