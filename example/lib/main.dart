@@ -42,9 +42,6 @@ class _MyAppState extends State<MyApp> {
     _otplessFlutterPlugin.setWebviewInspectable(true);
   }
 
-  // ** Function that is called when page is loaded
-  // ** We can check the auth state in this function
-
   Future<void> openLoginPage() async {
     Map<String, dynamic> arg = {'appId': appId};
     _otplessFlutterPlugin.openLoginPage(onHeadlessResult, arg);
@@ -59,6 +56,18 @@ class _MyAppState extends State<MyApp> {
       return;
     }
     Map<String, dynamic> arg = {'channelType': "WHATSAPP"};
+    _otplessFlutterPlugin.startHeadless(onHeadlessResult, arg);
+  }
+
+  Future<void> startHeadlessWithGmail() async {
+    if (Platform.isIOS && !isInitIos) {
+      _otplessFlutterPlugin.initHeadless(appId);
+      _otplessFlutterPlugin.setHeadlessCallback(onHeadlessResult);
+      isInitIos = true;
+      debugPrint("init headless sdk is called for ios");
+      return;
+    }
+    Map<String, dynamic> arg = {'channelType': "GMAIL"};
     _otplessFlutterPlugin.startHeadless(onHeadlessResult, arg);
   }
 
@@ -99,7 +108,6 @@ class _MyAppState extends State<MyApp> {
 
   @override
   void dispose() {
-    // Clean up the controller when the widget is disposed.
     urlTextContoller.dispose();
     super.dispose();
   }
@@ -112,52 +120,76 @@ class _MyAppState extends State<MyApp> {
           title: const Text('OTPless Flutter Plugin example app'),
         ),
         body: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Center(
-              child: Column(
-                children: [
-                  CupertinoButton.filled(
-                      child: Text("Open Otpless Login Page"),
-                      onPressed: openLoginPage),
-                  CupertinoButton.filled(
-                      child: Text("Toggle Loader Visibility"),
-                      onPressed: changeLoaderVisibility),
-                  CupertinoButton.filled(
-                      child: Text("Start Headless With Whatsapp"),
-                      onPressed: startHeadlessWithWhatsapp),
-                  CupertinoSwitch(value: isDebugLoggingEnabled, onChanged: _handleSwitchChange),
-                  TextField(
-                    onChanged: (value) {
-                      setState(() {
-                        phoneOrEmail = value;
-                      });
-                    },
-                    decoration: InputDecoration(
-                      hintText: 'Enter Phone or email here',
+          child:
+              SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0), // Adjusted margin
+                  child: Center(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch, // Makes the buttons fill the width
+                      children: [
+                        CupertinoButton.filled(
+                          onPressed: openLoginPage,
+                          child: const Text("Open Otpless Login Page"),
+                        ),
+                        const SizedBox(height: 16), // Spacing between buttons
+                        CupertinoButton.filled(
+                          onPressed: changeLoaderVisibility,
+                          child: const Text("Toggle Loader Visibility"),
+                        ),
+                        const SizedBox(height: 16),
+                        CupertinoButton.filled(
+                          onPressed: startHeadlessWithWhatsapp,
+                          child: const Text("Start Headless With WhatsApp"),
+                        ),
+                        const SizedBox(height: 16),
+                        CupertinoButton.filled(
+                          onPressed: startHeadlessWithGmail,
+                          child: const Text("Start Headless With Gmail"),
+                        ),
+                        const SizedBox(height: 16),
+                        CupertinoSwitch(
+                          value: isDebugLoggingEnabled,
+                          onChanged: _handleSwitchChange,
+                        ),
+                        const SizedBox(height: 16),
+                        TextField(
+                          onChanged: (value) {
+                            setState(() {
+                              phoneOrEmail = value;
+                            });
+                          },
+                          decoration: const InputDecoration(
+                            hintText: 'Enter Phone or email here',
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        TextField(
+                          onChanged: (value) {
+                            setState(() {
+                              otp = value;
+                            });
+                          },
+                          decoration: const InputDecoration(
+                            hintText: 'Enter your OTP here',
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        CupertinoButton.filled(
+                          onPressed: startHeadlessForPhoneAndEmail,
+                          child: const Text("Start with Phone and Email"),
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          _dataResponse,
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
                     ),
                   ),
-                  TextField(
-                    onChanged: (value) {
-                      setState(() {
-                        otp = value;
-                      });
-                    },
-                    decoration: InputDecoration(
-                      hintText: 'Enter your otp here',
-                    ),
-                  ),
-                  CupertinoButton.filled(
-                      child: Text("Start with Phone and Email"),
-                      onPressed: startHeadlessForPhoneAndEmail),
-                  Text(""),
-                  SizedBox(height: 100),
-                  SizedBox(height: 10),
-                  Text(_dataResponse)
-                ],
-              ),
-            ),
-          ),
+                ),
+              )
+
         ),
       ),
     );

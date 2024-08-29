@@ -77,3 +77,6 @@
 
 ## 2.1.7
 * WebAuthn implementation in android and iOS.
+
+## 2.1.8
+* uni_links package and build.gradle bug fix
