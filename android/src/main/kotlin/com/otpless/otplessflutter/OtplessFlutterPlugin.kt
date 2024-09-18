@@ -94,12 +94,6 @@ class OtplessFlutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, Act
         }
       }
 
-      "enableOneTap" -> {
-        val isEnabled = call.argument<Boolean>("arg") ?: true
-        result.success("")
-        otplessView.enableOneTap(isEnabled)
-      }
-
       "setHeadlessCallback" -> {
         result.success("")
         otplessView.setHeadlessCallback(this::onHeadlessResultCallback)

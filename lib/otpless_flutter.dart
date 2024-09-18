@@ -37,10 +37,6 @@ class Otpless {
     _otplessChannel.initHeadless(appid);
   }
 
-  Future<void> enableOneTap(bool isEnable) async {
-    _otplessChannel.enableOneTap(isEnable);
-  }
-
   Future<void> setHeadlessCallback(OtplessResultCallback callback) async {
     _otplessChannel.setHeadlessCallback(callback);
   }
