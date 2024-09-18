@@ -48,4 +48,9 @@ class Otpless {
   Future<void> enableDebugLogging(bool isDebugLoggingEnabled) async {
     _otplessChannel.enableDebugLogging(isDebugLoggingEnabled);
   }
+
+  Future<Map<String, String>> showPhoneHint(bool showFallback) async {
+    final result = await _otplessChannel.showPhoneHintLib(showFallback);
+    return result;
+  }
 }

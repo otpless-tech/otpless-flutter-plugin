@@ -72,4 +72,10 @@ class MethodChannelOtplessFlutter extends OtplessFlutterPlatform {
     await methodChannel
         .invokeMethod("enableDebugLogging", {'arg': isEnabled});
   }
+
+  Future<Map<String, String>> showPhoneHintLib(bool showFallback) async {
+    final result = await methodChannel
+        .invokeMethod<Map<dynamic, dynamic>>('showPhoneHintLib', {'arg': showFallback});
+    return (result ?? {}).map((key, value) => MapEntry(key.toString(), value.toString()));
+  }
 }
