@@ -2,8 +2,8 @@ PODS:
   - Flutter (1.0.0)
   - otpless_flutter (0.0.4):
     - Flutter
-    - OtplessSDK (= 2.1.4)
-  - OtplessSDK (2.1.4)
+    - OtplessSDK (= 2.1.5)
+  - OtplessSDK (2.1.5)
 
 DEPENDENCIES:
   - Flutter (from `Flutter`)
@@ -21,8 +21,8 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
-  otpless_flutter: e2e36cf8878744154c97b716282d9c848a97e0b8
-  OtplessSDK: d1f44d00d544358f7ba029649741848e8be4d3c1
+  otpless_flutter: 5a07b8f1240006365838f78163a523c6d8afc58e
+  OtplessSDK: 8583baab308f67d9da3452ab4aa686753cafdcd6
 
 PODFILE CHECKSUM: ef19549a9bc3046e7bb7d2fab4d021637c0c58a3
 

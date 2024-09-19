@@ -22,18 +22,19 @@ class _MyAppState extends State<MyApp> {
   String _dataResponse = 'Unknown';
   final _otplessFlutterPlugin = Otpless();
   var loaderVisibility = true;
-  final TextEditingController urlTextContoller = TextEditingController();
+  final TextEditingController phoneOrEmailTextController = TextEditingController();
+  String channel = "WHATSAPP";
 
   String phoneOrEmail = '';
   String otp = '';
   bool isInitIos = false;
-  bool isDebugLoggingEnabled = false;
 
   static const String appId = "YOUR_APPID";
 
   @override
   void initState() {
     super.initState();
+      _otplessFlutterPlugin.enableDebugLogging(true);
     if (Platform.isAndroid) {
       _otplessFlutterPlugin.initHeadless(appId);
       _otplessFlutterPlugin.setHeadlessCallback(onHeadlessResult);
@@ -47,7 +48,7 @@ class _MyAppState extends State<MyApp> {
     _otplessFlutterPlugin.openLoginPage(onHeadlessResult, arg);
   }
 
-  Future<void> startHeadlessWithWhatsapp() async {
+  Future<void> startHeadlessWithChannel() async {
     if (Platform.isIOS && !isInitIos) {
       _otplessFlutterPlugin.initHeadless(appId);
       _otplessFlutterPlugin.setHeadlessCallback(onHeadlessResult);
@@ -55,7 +56,7 @@ class _MyAppState extends State<MyApp> {
       debugPrint("init headless sdk is called for ios");
       return;
     }
-    Map<String, dynamic> arg = {'channelType': "WHATSAPP"};
+    Map<String, dynamic> arg = {'channelType': channel};
     _otplessFlutterPlugin.startHeadless(onHeadlessResult, arg);
   }
 
@@ -96,7 +97,7 @@ class _MyAppState extends State<MyApp> {
 
   @override
   void dispose() {
-    urlTextContoller.dispose();
+    phoneOrEmailTextController.dispose();
     super.dispose();
   }
 
@@ -127,16 +128,17 @@ class _MyAppState extends State<MyApp> {
                         ),
                         const SizedBox(height: 16),
                         CupertinoButton.filled(
-                          onPressed: startHeadlessWithWhatsapp,
-                          child: const Text("Start Headless With WhatsApp"),
+                          onPressed: startHeadlessWithChannel,
+                          child: const Text("Start Headless With Channel"),
                         ),
                         const SizedBox(height: 16),
-                        CupertinoSwitch(
-                          value: isDebugLoggingEnabled,
-                          onChanged: _handleSwitchChange,
+                        CupertinoButton.filled(
+                            onPressed: handlePhoneHint,
+                            child: const Text("Start phone hint")
                         ),
                         const SizedBox(height: 16),
                         TextField(
+                          controller: phoneOrEmailTextController,
                           onChanged: (value) {
                             setState(() {
                               phoneOrEmail = value;
@@ -155,6 +157,17 @@ class _MyAppState extends State<MyApp> {
                           },
                           decoration: const InputDecoration(
                             hintText: 'Enter your OTP here',
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        TextField(
+                          onChanged: (value) {
+                            setState(() {
+                              channel = value;
+                            });
+                          },
+                          decoration: const InputDecoration(
+                            hintText: 'Enter channel',
                           ),
                         ),
                         const SizedBox(height: 16),
@@ -178,10 +191,15 @@ class _MyAppState extends State<MyApp> {
     );
   }
 
-  void _handleSwitchChange(bool value) {
+  void handlePhoneHint() async {
+    final result = await _otplessFlutterPlugin.showPhoneHint(true);
     setState(() {
-      isDebugLoggingEnabled = value;
-      _otplessFlutterPlugin.enableDebugLogging(isDebugLoggingEnabled);
+      if (result["phoneNumber"] != null) {
+        phoneOrEmail = result["phoneNumber"]!;
+        phoneOrEmailTextController.text = phoneOrEmail;
+      } else {
+        _dataResponse = result["error"]!;
+      }
     });
   }
 }

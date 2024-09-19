@@ -37,10 +37,6 @@ class Otpless {
     _otplessChannel.initHeadless(appid);
   }
 
-  Future<void> enableOneTap(bool isEnable) async {
-    _otplessChannel.enableOneTap(isEnable);
-  }
-
   Future<void> setHeadlessCallback(OtplessResultCallback callback) async {
     _otplessChannel.setHeadlessCallback(callback);
   }
@@ -51,5 +47,10 @@ class Otpless {
 
   Future<void> enableDebugLogging(bool isDebugLoggingEnabled) async {
     _otplessChannel.enableDebugLogging(isDebugLoggingEnabled);
+  }
+
+  Future<Map<String, String>> showPhoneHint(bool showFallback) async {
+    final result = await _otplessChannel.showPhoneHintLib(showFallback);
+    return result;
   }
 }

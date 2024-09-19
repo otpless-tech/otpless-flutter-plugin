@@ -94,12 +94,6 @@ class OtplessFlutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, Act
         }
       }
 
-      "enableOneTap" -> {
-        val isEnabled = call.argument<Boolean>("arg") ?: true
-        result.success("")
-        otplessView.enableOneTap(isEnabled)
-      }
-
       "setHeadlessCallback" -> {
         result.success("")
         otplessView.setHeadlessCallback(this::onHeadlessResultCallback)
@@ -113,6 +107,13 @@ class OtplessFlutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, Act
         val isEnabled = call.argument<Boolean>("arg") ?: false
         result.success("")
         Utility.debugLogging = isEnabled
+      }
+
+      "showPhoneHintLib" -> {
+        val showFallback = call.argument<Boolean>("arg") ?: true
+        showPhoneHint(showFallback) {
+          result.success(it)
+        }
       }
 
       else -> {
@@ -205,6 +206,7 @@ class OtplessFlutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, Act
   override fun onAttachedToActivity(binding: ActivityPluginBinding) {
     activity = binding.activity
     otplessView = OtplessManager.getInstance().getOtplessView(activity)
+    otplessView.phoneHintManager.registerInOnCreate(activity)
     binding.addActivityResultListener(this)
     binding.addOnNewIntentListener(this)
   }
@@ -232,5 +234,17 @@ class OtplessFlutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, Act
   override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?): Boolean {
     if (!this::otplessView.isInitialized) return false
     return otplessView.onActivityResult(requestCode, resultCode, data)
+  }
+
+  fun showPhoneHint(showFallback: Boolean, onPhoneHintResult: (Map<String, String>) -> Unit) {
+    otplessView.phoneHintManager.showPhoneNumberHint(showFallback) { phoneHintResult ->
+      val map = mutableMapOf(
+        if (phoneHintResult.first != null)
+          "phoneNumber" to phoneHintResult.first!!
+        else
+          "error" to phoneHintResult.second!!.message!!
+      )
+      onPhoneHintResult(map)
+    }
   }
 }

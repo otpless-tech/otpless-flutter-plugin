@@ -58,10 +58,6 @@ class MethodChannelOtplessFlutter extends OtplessFlutterPlatform {
     await methodChannel.invokeMethod("initHeadless", {'arg': appid});
   }
 
-  Future<void> enableOneTap(bool isEnable) async {
-    await methodChannel.invokeMethod("enableOneTap", {'arg': isEnable});
-  }
-
   Future<void> setHeadlessCallback(OtplessResultCallback callback) async {
     _callback = callback;
     await methodChannel.invokeMethod("setHeadlessCallback");
@@ -75,5 +71,11 @@ class MethodChannelOtplessFlutter extends OtplessFlutterPlatform {
   Future<void> enableDebugLogging(bool isEnabled) async {
     await methodChannel
         .invokeMethod("enableDebugLogging", {'arg': isEnabled});
+  }
+
+  Future<Map<String, String>> showPhoneHintLib(bool showFallback) async {
+    final result = await methodChannel
+        .invokeMethod<Map<dynamic, dynamic>>('showPhoneHintLib', {'arg': showFallback});
+    return (result ?? {}).map((key, value) => MapEntry(key.toString(), value.toString()));
   }
 }

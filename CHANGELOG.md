@@ -80,3 +80,6 @@
 
 ## 2.1.8
 * uni_links package and build.gradle bug fix
+
+## 2.1.9
+* V3 web SDK implementation

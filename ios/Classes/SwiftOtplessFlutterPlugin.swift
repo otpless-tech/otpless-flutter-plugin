@@ -51,10 +51,6 @@ public class SwiftOtplessFlutterPlugin: NSObject, FlutterPlugin {
           let args = call.arguments as! [String: Any]
           let appId = args["arg"] as! String
           Otpless.sharedInstance.initialise(vc: viewController, appId: appId)
-      } else if (call.method == "enableOneTap") {
-          let args = call.arguments as! [String: Any]
-          let isOnetapEnabled = args["arg"] as! Bool
-          Otpless.sharedInstance.setOneTapEnabled(isOnetapEnabled)
       } else if (call.method == "setHeadlessCallback") {
           Otpless.sharedInstance.headlessDelegate = self;
       } else if (call.method == "setWebviewInspectable") {
