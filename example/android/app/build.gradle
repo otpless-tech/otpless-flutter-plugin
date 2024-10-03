@@ -62,20 +62,20 @@ android {
         //endregion
     }
 
-    signingConfigs {
-        release {
-            storeFile file(localProperties.getProperty("storeFile"))
-            storePassword localProperties.getProperty("storePassword")
-            keyAlias localProperties.getProperty("keyAlias")
-            keyPassword localProperties.getProperty("keyPassword")
-        }
-    }
+//    signingConfigs {
+//        release {
+//            storeFile file(localProperties.getProperty("storeFile"))
+//            storePassword localProperties.getProperty("storePassword")
+//            keyAlias localProperties.getProperty("keyAlias")
+//            keyPassword localProperties.getProperty("keyPassword")
+//        }
+//    }
 
     buildTypes {
-        release {
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig signingConfigs.release
-        }
+//        release {
+//            // Signing with the debug keys for now, so `flutter run --release` works.
+//            signingConfig signingConfigs.release
+//        }
     }
 }
 

@@ -53,4 +53,8 @@ class Otpless {
     final result = await _otplessChannel.showPhoneHintLib(showFallback);
     return result;
   }
+
+  Future<void> attachSecureService(String appId) async {
+    return await _otplessChannel.attachSecureService(appId);
+  }
 }

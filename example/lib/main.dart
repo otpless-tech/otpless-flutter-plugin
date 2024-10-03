@@ -22,22 +22,24 @@ class _MyAppState extends State<MyApp> {
   String _dataResponse = 'Unknown';
   final _otplessFlutterPlugin = Otpless();
   var loaderVisibility = true;
-  final TextEditingController phoneOrEmailTextController = TextEditingController();
+  final TextEditingController phoneOrEmailTextController =
+      TextEditingController();
   String channel = "WHATSAPP";
 
   String phoneOrEmail = '';
   String otp = '';
   bool isInitIos = false;
 
-  static const String appId = "YOUR_APPID";
+  static const String appId = "28ZJKKO7604HVB3VVCFI";
 
   @override
   void initState() {
     super.initState();
-      _otplessFlutterPlugin.enableDebugLogging(true);
+    _otplessFlutterPlugin.enableDebugLogging(true);
     if (Platform.isAndroid) {
       _otplessFlutterPlugin.initHeadless(appId);
       _otplessFlutterPlugin.setHeadlessCallback(onHeadlessResult);
+      _otplessFlutterPlugin.attachSecureService(appId);
       debugPrint("init headless sdk is called for android");
     }
     _otplessFlutterPlugin.setWebviewInspectable(true);
@@ -109,84 +111,81 @@ class _MyAppState extends State<MyApp> {
           title: const Text('OTPless Flutter Plugin example app'),
         ),
         body: SafeArea(
-          child:
-              SingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0), // Adjusted margin
-                  child: Center(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch, // Makes the buttons fill the width
-                      children: [
-                        CupertinoButton.filled(
-                          onPressed: openLoginPage,
-                          child: const Text("Open Otpless Login Page"),
-                        ),
-                        const SizedBox(height: 16), // Spacing between buttons
-                        CupertinoButton.filled(
-                          onPressed: changeLoaderVisibility,
-                          child: const Text("Toggle Loader Visibility"),
-                        ),
-                        const SizedBox(height: 16),
-                        CupertinoButton.filled(
-                          onPressed: startHeadlessWithChannel,
-                          child: const Text("Start Headless With Channel"),
-                        ),
-                        const SizedBox(height: 16),
-                        CupertinoButton.filled(
-                            onPressed: handlePhoneHint,
-                            child: const Text("Start phone hint")
-                        ),
-                        const SizedBox(height: 16),
-                        TextField(
-                          controller: phoneOrEmailTextController,
-                          onChanged: (value) {
-                            setState(() {
-                              phoneOrEmail = value;
-                            });
-                          },
-                          decoration: const InputDecoration(
-                            hintText: 'Enter Phone or email here',
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        TextField(
-                          onChanged: (value) {
-                            setState(() {
-                              otp = value;
-                            });
-                          },
-                          decoration: const InputDecoration(
-                            hintText: 'Enter your OTP here',
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        TextField(
-                          onChanged: (value) {
-                            setState(() {
-                              channel = value;
-                            });
-                          },
-                          decoration: const InputDecoration(
-                            hintText: 'Enter channel',
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        CupertinoButton.filled(
-                          onPressed: startHeadlessForPhoneAndEmail,
-                          child: const Text("Start with Phone and Email"),
-                        ),
-                        const SizedBox(height: 16),
-                        Text(
-                          _dataResponse,
-                          textAlign: TextAlign.center,
-                        ),
-                      ],
+            child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0), // Adjusted margin
+            child: Center(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment
+                    .stretch, // Makes the buttons fill the width
+                children: [
+                  CupertinoButton.filled(
+                    onPressed: openLoginPage,
+                    child: const Text("Open Otpless Login Page"),
+                  ),
+                  const SizedBox(height: 16), // Spacing between buttons
+                  CupertinoButton.filled(
+                    onPressed: changeLoaderVisibility,
+                    child: const Text("Toggle Loader Visibility"),
+                  ),
+                  const SizedBox(height: 16),
+                  CupertinoButton.filled(
+                    onPressed: startHeadlessWithChannel,
+                    child: const Text("Start Headless With Channel"),
+                  ),
+                  const SizedBox(height: 16),
+                  CupertinoButton.filled(
+                      onPressed: handlePhoneHint,
+                      child: const Text("Start phone hint")),
+                  const SizedBox(height: 16),
+                  TextField(
+                    controller: phoneOrEmailTextController,
+                    onChanged: (value) {
+                      setState(() {
+                        phoneOrEmail = value;
+                      });
+                    },
+                    decoration: const InputDecoration(
+                      hintText: 'Enter Phone or email here',
                     ),
                   ),
-                ),
-              )
-
-        ),
+                  const SizedBox(height: 16),
+                  TextField(
+                    onChanged: (value) {
+                      setState(() {
+                        otp = value;
+                      });
+                    },
+                    decoration: const InputDecoration(
+                      hintText: 'Enter your OTP here',
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  TextField(
+                    onChanged: (value) {
+                      setState(() {
+                        channel = value;
+                      });
+                    },
+                    decoration: const InputDecoration(
+                      hintText: 'Enter channel',
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  CupertinoButton.filled(
+                    onPressed: startHeadlessForPhoneAndEmail,
+                    child: const Text("Start with Phone and Email"),
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    _dataResponse,
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        )),
       ),
     );
   }

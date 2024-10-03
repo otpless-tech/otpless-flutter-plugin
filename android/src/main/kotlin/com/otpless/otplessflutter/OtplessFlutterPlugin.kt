@@ -10,6 +10,7 @@ import com.otpless.dto.HeadlessResponse
 import com.otpless.dto.OtplessRequest
 import com.otpless.main.OtplessManager
 import com.otpless.main.OtplessView
+import com.otpless.tesseract.OtplessSecureService
 import com.otpless.utils.Utility
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
@@ -114,6 +115,11 @@ class OtplessFlutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, Act
         showPhoneHint(showFallback) {
           result.success(it)
         }
+      }
+
+      "attachSecureService" -> {
+        val appId = call.argument<String>("appId") ?: ""
+        attachSecureService(appId, result)
       }
 
       else -> {
@@ -236,7 +242,7 @@ class OtplessFlutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, Act
     return otplessView.onActivityResult(requestCode, resultCode, data)
   }
 
-  fun showPhoneHint(showFallback: Boolean, onPhoneHintResult: (Map<String, String>) -> Unit) {
+  private fun showPhoneHint(showFallback: Boolean, onPhoneHintResult: (Map<String, String>) -> Unit) {
     otplessView.phoneHintManager.showPhoneNumberHint(showFallback) { phoneHintResult ->
       val map = mutableMapOf(
         if (phoneHintResult.first != null)
@@ -246,5 +252,23 @@ class OtplessFlutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, Act
       )
       onPhoneHintResult(map)
     }
+  }
+
+  private fun attachSecureService(appId: String, result: MethodChannel.Result) {
+    try {
+        val managerClass = Class.forName("com.otpless.secure.OtplessSecureManager")
+        val managerInstance = managerClass.getField("INSTANCE").get(null)
+        val creatorMethod = managerClass.getDeclaredMethod(
+          "getOtplessSecureService", Activity::class.java, String::class.java)
+        val secureService = creatorMethod.invoke(managerInstance, activity, appId) as? OtplessSecureService
+        otplessView.attachOtplessSecureService(secureService)
+        result.success("")
+      } catch (ex: ClassNotFoundException) {
+        Utility.debugLog(ex)
+        result.error("SERVICE_ERROR", "Failed to create otpless service.", ex.message);
+      } catch (ex: NoSuchMethodException) {
+        Utility.debugLog(ex)
+        result.error("SERVICE_ERROR", "Failed to create otpless service.", ex.message);
+      }
   }
 }
