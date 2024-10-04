@@ -32,7 +32,7 @@ class _MyAppState extends State<MyApp> {
   String otp = '';
   bool isInitIos = false;
 
-  static const String appId = "28ZJKKO7604HVB3VVCFI";
+  static const String appId = "YOUR_APPID";
 
   @override
   void initState() {
@@ -247,7 +247,11 @@ class _MyAppState extends State<MyApp> {
     final result = await _otplessFlutterPlugin.showPhoneHint(true);
     setState(() {
       if (result["phoneNumber"] != null) {
-        phoneOrEmail = result["phoneNumber"]!;
+        String phone = result["phoneNumber"]!;
+        if (phone .length > 10) {
+          phone = phone.substring(phone.length - 10);
+        }
+        phoneOrEmail = phone;
         phoneOrEmailTextController.text = phoneOrEmail;
       } else {
         _dataResponse = result["error"]!;
