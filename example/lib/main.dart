@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'dart:async';
 
 import 'package:otpless_flutter/otpless_flutter.dart';
@@ -22,6 +23,7 @@ class _MyAppState extends State<MyApp> {
   String _dataResponse = 'Unknown';
   final _otplessFlutterPlugin = Otpless();
   var loaderVisibility = true;
+  bool isSimStateListenerAttached = false;
   final TextEditingController phoneOrEmailTextController =
       TextEditingController();
   String channel = "WHATSAPP";
@@ -39,10 +41,26 @@ class _MyAppState extends State<MyApp> {
     if (Platform.isAndroid) {
       _otplessFlutterPlugin.initHeadless(appId);
       _otplessFlutterPlugin.setHeadlessCallback(onHeadlessResult);
-      _otplessFlutterPlugin.attachSecureService(appId);
       debugPrint("init headless sdk is called for android");
+      attachSecureService();
     }
     _otplessFlutterPlugin.setWebviewInspectable(true);
+  }
+
+  Future<void> attachSecureService() async {
+    try {
+      await _otplessFlutterPlugin.attachSecureService(appId);
+    } on PlatformException catch (e) {
+      print(
+          'PlatformException: ${e.message}, code: ${e.code}, details: ${e.details}');
+    }
+  }
+
+  Future<void> getEjectedSimStatus() async {
+    List<Map<String, dynamic>> data = await _otplessFlutterPlugin.getEjectedSimEntries();
+    setState(() {
+      _dataResponse = data.toString();
+    });
   }
 
   Future<void> openLoginPage() async {
@@ -84,6 +102,18 @@ class _MyAppState extends State<MyApp> {
     }
 
     _otplessFlutterPlugin.startHeadless(onHeadlessResult, arg);
+  }
+
+  Future<void> onSimCheckboxChange(bool isChecked) async {
+    if (isChecked) {
+      _otplessFlutterPlugin.setSimEventListener((data) {
+        setState(() {
+          _dataResponse = data.toString();
+        });
+      });
+    } else {
+      _otplessFlutterPlugin.setSimEventListener(null);
+    }
   }
 
   void onHeadlessResult(dynamic result) {
@@ -136,8 +166,31 @@ class _MyAppState extends State<MyApp> {
                   const SizedBox(height: 16),
                   CupertinoButton.filled(
                       onPressed: handlePhoneHint,
-                      child: const Text("Start phone hint")),
+                      child: const Text("Show Phone Hint")),
                   const SizedBox(height: 16),
+                  CupertinoButton.filled(
+                      onPressed: getEjectedSimStatus,
+                      child: const Text("Sim Eject Status")),
+                  const SizedBox(height: 16),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Checkbox(
+                          value: isSimStateListenerAttached,
+                          onChanged: (bool? value) {
+                            onSimCheckboxChange(value ?? false);
+                            setState(() {
+                              isSimStateListenerAttached = value!;
+                            });
+                          },
+                        ),
+                        Text(
+                          isSimStateListenerAttached ? 'Remove Sim Change Listener' : 'Attach Sim Change Listener',
+                          style: TextStyle(fontSize: 20),
+                        ),
+                      ]
+                  )
+                  ,
                   TextField(
                     controller: phoneOrEmailTextController,
                     onChanged: (value) {

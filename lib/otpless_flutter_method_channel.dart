@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'otpless_flutter_platform_interface.dart';
 
 typedef OtplessResultCallback = void Function(dynamic);
+typedef OtplessSimEventListener = void Function(List<Map<String, dynamic>>);
 
 /// An implementation of [OtplessFlutterPlatform] that uses method channels.
 class MethodChannelOtplessFlutter extends OtplessFlutterPlatform {
@@ -15,6 +16,7 @@ class MethodChannelOtplessFlutter extends OtplessFlutterPlatform {
   final methodChannel = const MethodChannel('otpless_flutter');
 
   OtplessResultCallback? _callback;
+  OtplessSimEventListener? _simEventListener;
 
   MethodChannelOtplessFlutter() {
     _setEventChannel();
@@ -26,6 +28,12 @@ class MethodChannelOtplessFlutter extends OtplessFlutterPlatform {
         final json = call.arguments as String;
         final result = jsonDecode(json);
         _callback!(result);
+      } else if(call.method == "otpless_sim_status_change_event") {
+        if (_simEventListener != null) {
+          final result = call.arguments as List<dynamic>;
+          final fR = (result ?? []).map((item) => Map<String, dynamic>.from(item)).toList();
+          _simEventListener!(fR);
+        }
       }
     });
   }
@@ -81,6 +89,17 @@ class MethodChannelOtplessFlutter extends OtplessFlutterPlatform {
 
   Future<void> attachSecureService(String appId) async {
     return await methodChannel
-        .invokeMethod("attachSecureService", {'appId', appId});
+        .invokeMethod("attachSecureService", {'appId': appId});
+  }
+
+  Future<List<Map<String, dynamic>>> getEjectedSimEntries() async {
+    final result = await methodChannel.invokeMethod<List<dynamic>>("getEjectedSimEntries");
+    return (result ?? []).map((item) => Map<String, dynamic>.from(item)).toList();
+  }
+
+  Future<void> setSimEventListener(final OtplessSimEventListener? listener) async {
+    this._simEventListener = listener;
+    bool isAttach = listener != null;
+    await methodChannel.invokeMethod("setSimEjectionListener", {"isAttach": isAttach});
   }
 }

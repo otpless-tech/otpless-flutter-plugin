@@ -11,6 +11,7 @@ import com.otpless.dto.OtplessRequest
 import com.otpless.main.OtplessManager
 import com.otpless.main.OtplessView
 import com.otpless.tesseract.OtplessSecureService
+import com.otpless.tesseract.sim.OtplessSimStateReceiverApi
 import com.otpless.utils.Utility
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
@@ -122,6 +123,17 @@ class OtplessFlutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, Act
         attachSecureService(appId, result)
       }
 
+      "getEjectedSimEntries" -> {
+        val ejectedSimEntries = getEjectedSimsEntries()
+        result.success(ejectedSimEntries)
+      }
+
+      "setSimEjectionListener" -> {
+        val isAttach = call.argument<Boolean>("isAttach") ?: false
+        setSimEjectionListener(isAttach)
+        result.success(null)
+      }
+
       else -> {
         result.notImplemented()
       }
@@ -212,7 +224,7 @@ class OtplessFlutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, Act
   override fun onAttachedToActivity(binding: ActivityPluginBinding) {
     activity = binding.activity
     otplessView = OtplessManager.getInstance().getOtplessView(activity)
-    otplessView.phoneHintManager.registerInOnCreate(activity)
+    otplessView.phoneHintManager.register(activity, false)
     binding.addActivityResultListener(this)
     binding.addOnNewIntentListener(this)
   }
@@ -254,7 +266,7 @@ class OtplessFlutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, Act
     }
   }
 
-  private fun attachSecureService(appId: String, result: MethodChannel.Result) {
+  private fun attachSecureService(appId: String, result: Result) {
     try {
         val managerClass = Class.forName("com.otpless.secure.OtplessSecureManager")
         val managerInstance = managerClass.getField("INSTANCE").get(null)
@@ -270,5 +282,33 @@ class OtplessFlutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, Act
         Utility.debugLog(ex)
         result.error("SERVICE_ERROR", "Failed to create otpless service.", ex.message);
       }
+  }
+
+  private fun getEjectedSimsEntries(): List<Map<String, Any>> {
+    val result = mutableListOf<Map<String, Any>>()
+    for (each in OtplessSimStateReceiverApi.savedEjectedSimEntries(activity)) {
+        result.add(
+          mapOf(
+            "state" to each.state,
+            "transactionTime" to each.transactionTime
+          )
+        )
+    }
+    return result
+  }
+
+  private fun setSimEjectionListener(isToAttach: Boolean) {
+    if (isToAttach) OtplessSimStateReceiverApi.setSimStateChangeListener {
+      val result = mutableListOf<Map<String, Any>>()
+      for (each in OtplessSimStateReceiverApi.savedEjectedSimEntries(activity)) {
+        result.add(
+          mapOf(
+            "state" to each.state,
+            "transactionTime" to each.transactionTime
+          )
+        )
+      }
+      channel.invokeMethod("otpless_sim_status_change_event", result)
+    } else OtplessSimStateReceiverApi.setSimStateChangeListener(null)
   }
 }

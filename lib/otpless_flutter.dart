@@ -57,4 +57,12 @@ class Otpless {
   Future<void> attachSecureService(String appId) async {
     return await _otplessChannel.attachSecureService(appId);
   }
+  
+  Future<List<Map<String, dynamic>>> getEjectedSimEntries() async {
+    return await _otplessChannel.getEjectedSimEntries();
+  }
+
+  Future<void> setSimEventListener(final OtplessSimEventListener? listener) async {
+    return await _otplessChannel.setSimEventListener(listener);
+  }
 }

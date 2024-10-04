@@ -66,7 +66,11 @@ public class SwiftOtplessFlutterPlugin: NSObject, FlutterPlugin {
           
           if shouldEnableDebugLogging {
               Otpless.sharedInstance.setLoggerDelegate(delegate: self)
-          } 
+          }
+      } else if (call.method == "attachSecureService" || call.method == "setSimEjectionListener") {
+          result(nil)
+      } else if (call.method == "getEjectedSimEntries") {
+          result([])
       }
   }
   
