@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'dart:async';
 
 import 'package:otpless_flutter/otpless_flutter.dart';
@@ -22,7 +23,9 @@ class _MyAppState extends State<MyApp> {
   String _dataResponse = 'Unknown';
   final _otplessFlutterPlugin = Otpless();
   var loaderVisibility = true;
-  final TextEditingController phoneOrEmailTextController = TextEditingController();
+  bool isSimStateListenerAttached = false;
+  final TextEditingController phoneOrEmailTextController =
+      TextEditingController();
   String channel = "WHATSAPP";
 
   String phoneOrEmail = '';
@@ -34,13 +37,30 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-      _otplessFlutterPlugin.enableDebugLogging(true);
+    _otplessFlutterPlugin.enableDebugLogging(true);
     if (Platform.isAndroid) {
       _otplessFlutterPlugin.initHeadless(appId);
       _otplessFlutterPlugin.setHeadlessCallback(onHeadlessResult);
       debugPrint("init headless sdk is called for android");
+      attachSecureService();
     }
     _otplessFlutterPlugin.setWebviewInspectable(true);
+  }
+
+  Future<void> attachSecureService() async {
+    try {
+      await _otplessFlutterPlugin.attachSecureService(appId);
+    } on PlatformException catch (e) {
+      print(
+          'PlatformException: ${e.message}, code: ${e.code}, details: ${e.details}');
+    }
+  }
+
+  Future<void> getEjectedSimStatus() async {
+    List<Map<String, dynamic>> data = await _otplessFlutterPlugin.getEjectedSimEntries();
+    setState(() {
+      _dataResponse = data.toString();
+    });
   }
 
   Future<void> openLoginPage() async {
@@ -84,6 +104,18 @@ class _MyAppState extends State<MyApp> {
     _otplessFlutterPlugin.startHeadless(onHeadlessResult, arg);
   }
 
+  Future<void> onSimCheckboxChange(bool isChecked) async {
+    if (isChecked) {
+      _otplessFlutterPlugin.setSimEventListener((data) {
+        setState(() {
+          _dataResponse = data.toString();
+        });
+      });
+    } else {
+      _otplessFlutterPlugin.setSimEventListener(null);
+    }
+  }
+
   void onHeadlessResult(dynamic result) {
     setState(() {
       _dataResponse = jsonEncode(result);
@@ -109,84 +141,104 @@ class _MyAppState extends State<MyApp> {
           title: const Text('OTPless Flutter Plugin example app'),
         ),
         body: SafeArea(
-          child:
-              SingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0), // Adjusted margin
-                  child: Center(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch, // Makes the buttons fill the width
-                      children: [
-                        CupertinoButton.filled(
-                          onPressed: openLoginPage,
-                          child: const Text("Open Otpless Login Page"),
-                        ),
-                        const SizedBox(height: 16), // Spacing between buttons
-                        CupertinoButton.filled(
-                          onPressed: changeLoaderVisibility,
-                          child: const Text("Toggle Loader Visibility"),
-                        ),
-                        const SizedBox(height: 16),
-                        CupertinoButton.filled(
-                          onPressed: startHeadlessWithChannel,
-                          child: const Text("Start Headless With Channel"),
-                        ),
-                        const SizedBox(height: 16),
-                        CupertinoButton.filled(
-                            onPressed: handlePhoneHint,
-                            child: const Text("Start phone hint")
-                        ),
-                        const SizedBox(height: 16),
-                        TextField(
-                          controller: phoneOrEmailTextController,
-                          onChanged: (value) {
+            child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0), // Adjusted margin
+            child: Center(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment
+                    .stretch, // Makes the buttons fill the width
+                children: [
+                  CupertinoButton.filled(
+                    onPressed: openLoginPage,
+                    child: const Text("Open Otpless Login Page"),
+                  ),
+                  const SizedBox(height: 16), // Spacing between buttons
+                  CupertinoButton.filled(
+                    onPressed: changeLoaderVisibility,
+                    child: const Text("Toggle Loader Visibility"),
+                  ),
+                  const SizedBox(height: 16),
+                  CupertinoButton.filled(
+                    onPressed: startHeadlessWithChannel,
+                    child: const Text("Start Headless With Channel"),
+                  ),
+                  const SizedBox(height: 16),
+                  CupertinoButton.filled(
+                      onPressed: handlePhoneHint,
+                      child: const Text("Show Phone Hint")),
+                  const SizedBox(height: 16),
+                  CupertinoButton.filled(
+                      onPressed: getEjectedSimStatus,
+                      child: const Text("Sim Eject Status")),
+                  const SizedBox(height: 16),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Checkbox(
+                          value: isSimStateListenerAttached,
+                          onChanged: (bool? value) {
+                            onSimCheckboxChange(value ?? false);
                             setState(() {
-                              phoneOrEmail = value;
+                              isSimStateListenerAttached = value!;
                             });
                           },
-                          decoration: const InputDecoration(
-                            hintText: 'Enter Phone or email here',
-                          ),
                         ),
-                        const SizedBox(height: 16),
-                        TextField(
-                          onChanged: (value) {
-                            setState(() {
-                              otp = value;
-                            });
-                          },
-                          decoration: const InputDecoration(
-                            hintText: 'Enter your OTP here',
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        TextField(
-                          onChanged: (value) {
-                            setState(() {
-                              channel = value;
-                            });
-                          },
-                          decoration: const InputDecoration(
-                            hintText: 'Enter channel',
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        CupertinoButton.filled(
-                          onPressed: startHeadlessForPhoneAndEmail,
-                          child: const Text("Start with Phone and Email"),
-                        ),
-                        const SizedBox(height: 16),
                         Text(
-                          _dataResponse,
-                          textAlign: TextAlign.center,
+                          isSimStateListenerAttached ? 'Remove Sim Change Listener' : 'Attach Sim Change Listener',
+                          style: TextStyle(fontSize: 20),
                         ),
-                      ],
+                      ]
+                  )
+                  ,
+                  TextField(
+                    controller: phoneOrEmailTextController,
+                    onChanged: (value) {
+                      setState(() {
+                        phoneOrEmail = value;
+                      });
+                    },
+                    decoration: const InputDecoration(
+                      hintText: 'Enter Phone or email here',
                     ),
                   ),
-                ),
-              )
-
-        ),
+                  const SizedBox(height: 16),
+                  TextField(
+                    onChanged: (value) {
+                      setState(() {
+                        otp = value;
+                      });
+                    },
+                    decoration: const InputDecoration(
+                      hintText: 'Enter your OTP here',
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  TextField(
+                    onChanged: (value) {
+                      setState(() {
+                        channel = value;
+                      });
+                    },
+                    decoration: const InputDecoration(
+                      hintText: 'Enter channel',
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  CupertinoButton.filled(
+                    onPressed: startHeadlessForPhoneAndEmail,
+                    child: const Text("Start with Phone and Email"),
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    _dataResponse,
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        )),
       ),
     );
   }
@@ -195,7 +247,11 @@ class _MyAppState extends State<MyApp> {
     final result = await _otplessFlutterPlugin.showPhoneHint(true);
     setState(() {
       if (result["phoneNumber"] != null) {
-        phoneOrEmail = result["phoneNumber"]!;
+        String phone = result["phoneNumber"]!;
+        if (phone .length > 10) {
+          phone = phone.substring(phone.length - 10);
+        }
+        phoneOrEmail = phone;
         phoneOrEmailTextController.text = phoneOrEmail;
       } else {
         _dataResponse = result["error"]!;

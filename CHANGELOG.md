@@ -83,3 +83,7 @@
 
 ## 2.1.9
 * V3 web SDK implementation
+
+## 2.2.0
+* sim analysis query and listener added
+* unique id provider support added
