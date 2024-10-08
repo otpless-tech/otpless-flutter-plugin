@@ -26,11 +26,16 @@ class _MyAppState extends State<MyApp> {
   bool isSimStateListenerAttached = false;
   final TextEditingController phoneOrEmailTextController =
       TextEditingController();
+  final TextEditingController otpController = TextEditingController();
   String channel = "WHATSAPP";
 
   String phoneOrEmail = '';
   String otp = '';
   bool isInitIos = false;
+
+  String deliveryChannel = '';
+  String otpLength = "";
+  String expiry = "";
 
   static const String appId = "YOUR_APPID";
 
@@ -57,7 +62,8 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future<void> getEjectedSimStatus() async {
-    List<Map<String, dynamic>> data = await _otplessFlutterPlugin.getEjectedSimEntries();
+    List<Map<String, dynamic>> data =
+        await _otplessFlutterPlugin.getEjectedSimEntries();
     setState(() {
       _dataResponse = data.toString();
     });
@@ -100,6 +106,16 @@ class _MyAppState extends State<MyApp> {
     if (otp.isNotEmpty) {
       arg["otp"] = otp;
     }
+    // adding delivery channel, otp length and expiry
+    if (deliveryChannel.isNotEmpty) {
+      arg["deliveryChannel"] = deliveryChannel;
+    }
+    if (otpLength.isNotEmpty) {
+      arg["otpLength"] = otpLength;
+    }
+    if (expiry.isNotEmpty) {
+      arg["expiry"] = expiry;
+    }
 
     _otplessFlutterPlugin.startHeadless(onHeadlessResult, arg);
   }
@@ -119,6 +135,12 @@ class _MyAppState extends State<MyApp> {
   void onHeadlessResult(dynamic result) {
     setState(() {
       _dataResponse = jsonEncode(result);
+      String responseType = result["responseType"];
+      if (responseType == "OTP_AUTO_READ") {
+        String _otp = result["response"]["otp"];
+        otpController.text = _otp;
+        otp = _otp;
+      }
     });
   }
 
@@ -173,7 +195,7 @@ class _MyAppState extends State<MyApp> {
                       child: const Text("Sim Eject Status")),
                   const SizedBox(height: 16),
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
                         Checkbox(
                           value: isSimStateListenerAttached,
@@ -185,12 +207,12 @@ class _MyAppState extends State<MyApp> {
                           },
                         ),
                         Text(
-                          isSimStateListenerAttached ? 'Remove Sim Change Listener' : 'Attach Sim Change Listener',
+                          isSimStateListenerAttached
+                              ? 'Remove Sim Change Listener'
+                              : 'Attach Sim Change Listener',
                           style: TextStyle(fontSize: 20),
                         ),
-                      ]
-                  )
-                  ,
+                      ]),
                   TextField(
                     controller: phoneOrEmailTextController,
                     onChanged: (value) {
@@ -204,6 +226,7 @@ class _MyAppState extends State<MyApp> {
                   ),
                   const SizedBox(height: 16),
                   TextField(
+                    controller: otpController,
                     onChanged: (value) {
                       setState(() {
                         otp = value;
@@ -230,6 +253,36 @@ class _MyAppState extends State<MyApp> {
                     child: const Text("Start with Phone and Email"),
                   ),
                   const SizedBox(height: 16),
+                  // adding delivery channel
+                  TextField(
+                    onChanged: (value) {
+                      deliveryChannel = value;
+                    },
+                    decoration: const InputDecoration(
+                        hintText: "Enter Delivery Channel"),
+                  ),
+                  const SizedBox(height: 16),
+                  // adding otp length
+                  TextField(
+                    onChanged: (value) {
+                      otpLength = value;
+                    },
+                    decoration:
+                        const InputDecoration(hintText: "Enter the OTP length"),
+                    keyboardType: TextInputType.number,
+                  ),
+                  const SizedBox(height: 16),
+                  // adding expiry
+                  TextField(
+                    onChanged: (value) {
+                      expiry = value;
+                    },
+                    decoration: const InputDecoration(
+                        hintText: "Enter the expiry in seconds"),
+                    keyboardType: TextInputType.number,
+                  ),
+                  const SizedBox(height: 16),
+                  // response view
                   Text(
                     _dataResponse,
                     textAlign: TextAlign.center,
@@ -248,7 +301,7 @@ class _MyAppState extends State<MyApp> {
     setState(() {
       if (result["phoneNumber"] != null) {
         String phone = result["phoneNumber"]!;
-        if (phone .length > 10) {
+        if (phone.length > 10) {
           phone = phone.substring(phone.length - 10);
         }
         phoneOrEmail = phone;

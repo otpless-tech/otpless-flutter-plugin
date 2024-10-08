@@ -7,6 +7,8 @@ import android.util.Log
 import androidx.annotation.NonNull
 import com.otpless.dto.HeadlessRequest
 import com.otpless.dto.HeadlessResponse
+import com.otpless.dto.OtpDeliveryChannel
+import com.otpless.dto.OtpLength
 import com.otpless.dto.OtplessRequest
 import com.otpless.main.OtplessManager
 import com.otpless.main.OtplessView
@@ -209,7 +211,28 @@ class OtplessFlutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, Act
         headlessRequest.setChannelType(channelType)
       }
     }
+    // adding otp length and expiry
+    json.optString("otpLength").softParseInt {
+      headlessRequest.setOtpLength(OtpLength.suggestOtpSize(it))
+    }
+    json.optString("expiry").softParseInt {
+      headlessRequest.setExpiry(it)
+    }
+    // adding delivery channel
+    val dChannelStr: String = json.optString("deliveryChannel")
+    headlessRequest.setDeliveryChannel(
+      OtpDeliveryChannel.from(dChannelStr.uppercase())
+    )
     return headlessRequest
+  }
+
+  private inline  fun String.softParseInt(onSuccessParse: (Int) -> Unit) {
+    if (this.isEmpty()) return
+    try {
+      onSuccessParse(this.toInt())
+    } catch (ex: NumberFormatException) {
+      Utility.debugLog(ex)
+    }
   }
 
   fun onBackPressed(): Boolean {
