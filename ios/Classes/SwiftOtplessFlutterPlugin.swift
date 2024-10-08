@@ -84,6 +84,15 @@ public class SwiftOtplessFlutterPlugin: NSObject, FlutterPlugin {
         } else if let channelType = args["channelType"] {
             headlessRequest.setChannelType(channelType)
         }
+        if let deliveryChannel = args["deliveryChannel"] {
+            headlessRequest.setDeliveryChannel(deliveryChannel.uppercased())
+        }
+        if let otpLength = args["otpLength"] {
+            headlessRequest.setOtpLength(otpLength: otpLength)
+        }
+        if let expiry = args["expiry"] {
+            headlessRequest.setExpiry(expiry: expiry)
+        }
         return headlessRequest
     }
     
