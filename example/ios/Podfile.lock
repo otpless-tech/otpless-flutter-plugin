@@ -2,8 +2,8 @@ PODS:
   - Flutter (1.0.0)
   - otpless_flutter (0.0.4):
     - Flutter
-    - OtplessSDK (= 2.1.5)
-  - OtplessSDK (2.1.5)
+    - OtplessSDK (= 2.1.8)
+  - OtplessSDK (2.1.8)
 
 DEPENDENCIES:
   - Flutter (from `Flutter`)
@@ -20,10 +20,10 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/otpless_flutter/ios"
 
 SPEC CHECKSUMS:
-  Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
-  otpless_flutter: 5a07b8f1240006365838f78163a523c6d8afc58e
-  OtplessSDK: 8583baab308f67d9da3452ab4aa686753cafdcd6
+  Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
+  otpless_flutter: 58eeca6f0bce42925638179e82f52b33ef93a76d
+  OtplessSDK: 6da860f65ad20cf6adb91f74817e1299f5fc6adf
 
 PODFILE CHECKSUM: ef19549a9bc3046e7bb7d2fab4d021637c0c58a3
 
-COCOAPODS: 1.14.3
+COCOAPODS: 1.13.0

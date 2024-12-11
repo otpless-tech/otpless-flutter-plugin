@@ -71,7 +71,7 @@ class _MyAppState extends State<MyApp> {
 
   Future<void> openLoginPage() async {
     Map<String, dynamic> arg = {'appId': appId};
-    _otplessFlutterPlugin.openLoginPage(onHeadlessResult, arg);
+    _otplessFlutterPlugin.openLoginPage(onLoginPageResult, arg);
   }
 
   Future<void> startHeadlessWithChannel() async {
@@ -141,6 +141,12 @@ class _MyAppState extends State<MyApp> {
         otpController.text = _otp;
         otp = _otp;
       }
+    });
+  }
+
+  void onLoginPageResult(dynamic result) {
+    setState(() {
+      _dataResponse = jsonEncode(result);
     });
   }
 

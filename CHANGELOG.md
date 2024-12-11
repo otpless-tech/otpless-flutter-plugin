@@ -87,3 +87,6 @@
 ## 2.2.0
 * sim analysis query and listener added
 * unique id provider support added
+
+## 2.2.2
+* RC4 changes
