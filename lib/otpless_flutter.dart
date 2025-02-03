@@ -65,4 +65,8 @@ class Otpless {
   Future<void> setSimEventListener(final OtplessSimEventListener? listener) async {
     return await _otplessChannel.setSimEventListener(listener);
   }
+
+  Future<void> commitHeadlessResponse(final dynamic response) async {
+    return await _otplessChannel.commitHeadlessResponse(response);
+  }
 }

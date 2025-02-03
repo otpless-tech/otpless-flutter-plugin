@@ -136,9 +136,34 @@ class OtplessFlutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, Act
         result.success(null)
       }
 
+      "commitHeadlessResponse" -> {
+        val response = call.argument<Map<String, Any>>("response") ?: emptyMap()
+        val headlessResponse = convertMapToHeadlessResponse(response)
+        if (::otplessView.isInitialized) {
+          otplessView.commitHeadlessResponse(headlessResponse)
+        }
+      }
+
       else -> {
         result.notImplemented()
       }
+    }
+  }
+
+  private fun convertMapToHeadlessResponse(response: Map<String, Any>): HeadlessResponse? {
+    if (response.isEmpty()) return null
+    try {
+      val responseType = response["responseType"].toString()
+      val responseJson =  JSONObject(response["response"] as Map<String, Any>)
+      val statusCode = response["statusCode"].toString().softParseStatusCode()
+
+      return HeadlessResponse(
+        responseType,
+        responseJson,
+       statusCode
+      )
+    } catch (_: Exception) {
+      return null
     }
   }
 
@@ -232,6 +257,16 @@ class OtplessFlutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, Act
       onSuccessParse(this.toInt())
     } catch (ex: NumberFormatException) {
       Utility.debugLog(ex)
+    }
+  }
+
+  private fun String.softParseStatusCode() : Int {
+    if (this.isEmpty()) return -1000
+    try {
+      return this.toInt()
+    } catch (e: NumberFormatException) {
+      Utility.debugLog(e)
+      return -1000
     }
   }
 

@@ -25,7 +25,7 @@ public class SwiftOtplessFlutterPlugin: NSObject, FlutterPlugin {
       }
       else if(call.method == "openOtplessLoginPage"){
           guard let viewController = UIApplication.shared.delegate?.window??.rootViewController else {return}
-          Otpless.sharedInstance.delegate = self;
+          Otpless.sharedInstance.setLoginPageDelegate(self);
           let args = call.arguments as! [String: Any]
           let jsonString = args["arg"] as! String
           let argument: [String: Any] = SwiftOtplessFlutterPlugin.convertToDictionary(text: jsonString)!
@@ -35,14 +35,15 @@ public class SwiftOtplessFlutterPlugin: NSObject, FlutterPlugin {
       } else if (call.method == "setLoaderVisibility") {
           // do nothing
       } else if (call.method == "startHeadless") {
-          Otpless.sharedInstance.headlessDelegate = self;
+          Otpless.sharedInstance.setHeadlessResponseDelegate(self);
           let args = call.arguments as! [String: Any]
           let jsonString = args["arg"] as! String
           let data = jsonString.data(using: .utf8)!
           let argument: [String: String] = try! JSONSerialization.jsonObject(with: data, options: []) as! [String: String]
           let headlessRequest = createHeadlessRequest(args: argument)
           if let otp = argument["otp"] {
-              Otpless.sharedInstance.verifyOTP(otp: otp, headlessRequest: headlessRequest)
+              headlessRequest.setOtp(otp: otp)
+              Otpless.sharedInstance.startHeadless(headlessRequest: headlessRequest)
           } else {
               Otpless.sharedInstance.startHeadless(headlessRequest: createHeadlessRequest(args: argument))
           }
@@ -52,7 +53,7 @@ public class SwiftOtplessFlutterPlugin: NSObject, FlutterPlugin {
           let appId = args["arg"] as! String
           Otpless.sharedInstance.initialise(vc: viewController, appId: appId)
       } else if (call.method == "setHeadlessCallback") {
-          Otpless.sharedInstance.headlessDelegate = self;
+          Otpless.sharedInstance.setHeadlessResponseDelegate(self);
       } else if (call.method == "setWebviewInspectable") {
           let args = call.arguments as! [String: Any]
           var isInspectable = args["arg"] as? Bool
@@ -71,8 +72,25 @@ public class SwiftOtplessFlutterPlugin: NSObject, FlutterPlugin {
           result(nil)
       } else if (call.method == "getEjectedSimEntries") {
           result([])
+      } else if call.method == "commitHeadlessResponse" {
+          let args = call.arguments as? [String: Any]
+          let response = args?["response"] as? [String: Any]
+          let headlessResponse: HeadlessResponse? = convertDictionaryToHeadlessResponse(response)
+          Otpless.sharedInstance.commitHeadlessResponse(headlessResponse: headlessResponse)
       }
   }
+    
+    private func convertDictionaryToHeadlessResponse(_ dict: [String: Any]?) -> HeadlessResponse? {
+        guard let dict = dict else {
+            return nil
+        }
+        
+        return HeadlessResponse(
+            responseType: dict["responseType"] as? String ?? "",
+            responseData: dict["response"] as? [String: Any],
+            statusCode: dict["statusCode"] as? Int ?? -1000
+        )
+    }
   
     private func createHeadlessRequest(args: [String: String]) -> HeadlessRequest {
         let headlessRequest = HeadlessRequest()
@@ -156,12 +174,12 @@ extension SwiftOtplessFlutterPlugin: onResponseDelegate{
 
 extension SwiftOtplessFlutterPlugin: onHeadlessResponseDelegate {
     public func onHeadlessResponse(response: OtplessSDK.HeadlessResponse?) {
-        if response == nil {
+        guard let response = response else {
             return
         }
-        let flutterResponse: [String: Any] = ["statusCode": response!.statusCode,
-                                              "responseType": response!.responseType,
-                                              "response": response!.responseData]
+        let flutterResponse: [String: Any] = ["statusCode": response.statusCode,
+                                              "responseType": response.responseType,
+                                              "response": response.responseData]
         let jsonData = try! JSONSerialization.data(withJSONObject: flutterResponse, options: [])
         ChannelManager.shared.invokeMethod(method: "otpless_callback_event", arguments: String(data: jsonData, encoding: .utf8))
     }

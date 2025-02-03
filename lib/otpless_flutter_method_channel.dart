@@ -102,4 +102,8 @@ class MethodChannelOtplessFlutter extends OtplessFlutterPlatform {
     bool isAttach = listener != null;
     await methodChannel.invokeMethod("setSimEjectionListener", {"isAttach": isAttach});
   }
+
+  Future<void> commitHeadlessResponse(final dynamic response) async {
+    await methodChannel.invokeMethod("commitHeadlessResponse", { "response": response });
+  }
 }

@@ -135,6 +135,7 @@ class _MyAppState extends State<MyApp> {
   void onHeadlessResult(dynamic result) {
     setState(() {
       _dataResponse = jsonEncode(result);
+      _otplessFlutterPlugin.commitHeadlessResponse(result);
       String responseType = result["responseType"];
       if (responseType == "OTP_AUTO_READ") {
         String _otp = result["response"]["otp"];
