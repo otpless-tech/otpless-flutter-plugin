@@ -37,7 +37,7 @@ class _MyAppState extends State<MyApp> {
   String otpLength = "";
   String expiry = "";
 
-  static const String appId = "YOUR_APPID";
+  static const String appId = "K8K415KI2VMZV27648JJ" /* "YOUR_APPID" */;
 
   @override
   void initState() {
@@ -83,6 +83,7 @@ class _MyAppState extends State<MyApp> {
       return;
     }
     Map<String, dynamic> arg = {'channelType': channel};
+    arg["timeout"] = 21;
     _otplessFlutterPlugin.startHeadless(onHeadlessResult, arg);
   }
 
@@ -95,6 +96,7 @@ class _MyAppState extends State<MyApp> {
       return;
     }
     Map<String, dynamic> arg = {};
+    arg["timeout"] = 21;
     var x = double.tryParse(phoneOrEmail);
     if (x != null) {
       arg["phone"] = phoneOrEmail;

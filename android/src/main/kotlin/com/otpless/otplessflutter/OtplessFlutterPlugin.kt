@@ -204,8 +204,10 @@ class OtplessFlutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, Act
 
   private fun startHeadless(json: JSONObject) {
     val headlessRequest = parseHeadlessRequest(json)
+    val timeout = json.optInt("timeout", 0)
     activity.runOnUiThread {
-      otplessView.startHeadless(headlessRequest, this::onHeadlessResultCallback)
+      if (timeout == 0) otplessView.startHeadless(headlessRequest, this::onHeadlessResultCallback)
+      else otplessView.startHeadless(headlessRequest, timeout.toLong(), this::onHeadlessResultCallback)
     }
   }
 

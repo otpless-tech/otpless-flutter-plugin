@@ -1,5 +1,4 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.otpless_flutter_example">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
    <application
         android:label="otpless_flutter_example"
         android:name="${applicationName}"
@@ -41,7 +40,7 @@
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data
                     android:host="otpless"
-                    android:scheme= "otpless.n72guk3t8q7d1aly97o1"/>
+                    android:scheme= "otpless.k8k415ki2vmzv27648jj"/>
             </intent-filter>
         </activity>
         <!-- Don't delete the meta-data below.
