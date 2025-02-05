@@ -77,6 +77,7 @@ android {
             signingConfig signingConfigs.release
         }
     }
+    namespace 'com.example.otpless_flutter_example'
 }
 
 flutter {

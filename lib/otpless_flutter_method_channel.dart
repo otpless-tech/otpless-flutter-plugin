@@ -62,8 +62,8 @@ class MethodChannelOtplessFlutter extends OtplessFlutterPlatform {
         .invokeMethod("startHeadless", {'arg': json.encode(jsonObject)});
   }
 
-  Future<void> initHeadless(String appid) async {
-    await methodChannel.invokeMethod("initHeadless", {'arg': appid});
+  Future<void> initHeadless(String appid, double timeout) async {
+    await methodChannel.invokeMethod("initHeadless", {'arg': appid, 'timeout': timeout});
   }
 
   Future<void> setHeadlessCallback(OtplessResultCallback callback) async {
@@ -101,5 +101,9 @@ class MethodChannelOtplessFlutter extends OtplessFlutterPlatform {
     this._simEventListener = listener;
     bool isAttach = listener != null;
     await methodChannel.invokeMethod("setSimEjectionListener", {"isAttach": isAttach});
+  }
+
+  Future<void> commitHeadlessResponse(final dynamic response) async {
+    await methodChannel.invokeMethod("commitHeadlessResponse", { "response": response });
   }
 }
