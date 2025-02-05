@@ -44,7 +44,7 @@ class _MyAppState extends State<MyApp> {
     super.initState();
     _otplessFlutterPlugin.enableDebugLogging(true);
     if (Platform.isAndroid) {
-      _otplessFlutterPlugin.initHeadless(appId);
+      _otplessFlutterPlugin.initHeadless(appId, timeout: 23);
       _otplessFlutterPlugin.setHeadlessCallback(onHeadlessResult);
       debugPrint("init headless sdk is called for android");
       attachSecureService();
@@ -76,27 +76,27 @@ class _MyAppState extends State<MyApp> {
 
   Future<void> startHeadlessWithChannel() async {
     if (Platform.isIOS && !isInitIos) {
-      _otplessFlutterPlugin.initHeadless(appId);
+      _otplessFlutterPlugin.initHeadless(appId, timeout: 26);
       _otplessFlutterPlugin.setHeadlessCallback(onHeadlessResult);
       isInitIos = true;
       debugPrint("init headless sdk is called for ios");
       return;
     }
     Map<String, dynamic> arg = {'channelType': channel};
-    arg["timeout"] = 21;
+    arg["timeout"] = "21";
     _otplessFlutterPlugin.startHeadless(onHeadlessResult, arg);
   }
 
   Future<void> startHeadlessForPhoneAndEmail() async {
     if (Platform.isIOS && !isInitIos) {
-      _otplessFlutterPlugin.initHeadless(appId);
+      _otplessFlutterPlugin.initHeadless(appId, timeout: 1);
       _otplessFlutterPlugin.setHeadlessCallback(onHeadlessResult);
       isInitIos = true;
       debugPrint("init headless sdk is called for ios");
       return;
     }
     Map<String, dynamic> arg = {};
-    arg["timeout"] = 21;
+    arg["timeout"] = "21";
     var x = double.tryParse(phoneOrEmail);
     if (x != null) {
       arg["phone"] = phoneOrEmail;
