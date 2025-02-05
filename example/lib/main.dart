@@ -37,7 +37,7 @@ class _MyAppState extends State<MyApp> {
   String otpLength = "";
   String expiry = "";
 
-  static const String appId = "K8K415KI2VMZV27648JJ" /* "YOUR_APPID" */;
+  static const String appId = "YOUR_APPID";
 
   @override
   void initState() {

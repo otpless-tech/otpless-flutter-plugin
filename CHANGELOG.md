@@ -90,3 +90,8 @@
 
 ## 2.2.2
 * RC4 changes
+
+## 2.2.3
+* custom login uri and timeout support
+* optimizations and fixes
+* core android 2.6.3 and core ios 2.2.8 supported
