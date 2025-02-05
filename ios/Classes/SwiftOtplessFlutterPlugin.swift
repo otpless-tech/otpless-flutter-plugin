@@ -51,7 +51,9 @@ public class SwiftOtplessFlutterPlugin: NSObject, FlutterPlugin {
           guard let viewController = UIApplication.shared.delegate?.window??.rootViewController else {return}
           let args = call.arguments as! [String: Any]
           let appId = args["arg"] as! String
-          Otpless.sharedInstance.initialise(vc: viewController, appId: appId)
+          let loginUri = args["loginUri"] as? String
+          let timeout = args["timeout"] as? Double
+          Otpless.sharedInstance.initialise(vc: viewController, appId: appId, loginUri: loginUri ,timeoutInterval: timeout != nil ? timeout! : 30.0)
       } else if (call.method == "setHeadlessCallback") {
           Otpless.sharedInstance.setHeadlessResponseDelegate(self);
       } else if (call.method == "setWebviewInspectable") {

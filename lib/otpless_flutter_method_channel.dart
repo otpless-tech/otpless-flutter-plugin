@@ -62,8 +62,8 @@ class MethodChannelOtplessFlutter extends OtplessFlutterPlatform {
         .invokeMethod("startHeadless", {'arg': json.encode(jsonObject)});
   }
 
-  Future<void> initHeadless(String appid) async {
-    await methodChannel.invokeMethod("initHeadless", {'arg': appid});
+  Future<void> initHeadless(String appid, double timeout) async {
+    await methodChannel.invokeMethod("initHeadless", {'arg': appid, 'timeout': timeout});
   }
 
   Future<void> setHeadlessCallback(OtplessResultCallback callback) async {

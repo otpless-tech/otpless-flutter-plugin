@@ -33,8 +33,8 @@ class Otpless {
     _otplessChannel.startHeadless(callback, jsonObject);
   }
 
-  Future<void> initHeadless(String appid) async {
-    _otplessChannel.initHeadless(appid);
+  Future<void> initHeadless(String appid, {double timeout = 30.0}) async {
+    _otplessChannel.initHeadless(appid, timeout);
   }
 
   Future<void> setHeadlessCallback(OtplessResultCallback callback) async {
