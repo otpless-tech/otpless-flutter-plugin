@@ -1,6 +1,6 @@
 name: otpless_flutter
 description: Flutter plugin to integrate OTPless login with whatsapp with flutter
-version: 2.2.3
+version: 2.2.4
 homepage: https://github.com/otpless-tech/otpless-flutter-plugin
 
 environment:

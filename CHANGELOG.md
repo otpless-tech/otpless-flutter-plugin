@@ -95,3 +95,7 @@
 * custom login uri and timeout support
 * optimizations and fixes
 * core android 2.6.3 and core ios 2.2.8 supported
+
+
+## 2.2.4
+* Fixed android countdown timer crash by bumping android to 2.6.4
