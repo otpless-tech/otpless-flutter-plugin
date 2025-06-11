@@ -99,3 +99,7 @@
 
 ## 2.2.4
 * Fixed android countdown timer crash by bumping android to 2.6.4
+
+## 2.2.5
+* core android 2.6.5
+* OtplessSimStateReceiver removed from module AndroidManifest
